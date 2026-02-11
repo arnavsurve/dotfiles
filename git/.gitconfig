@@ -1,0 +1,11 @@
+[user]
+	email = arnav@anything.com
+	name = Arnav Surve
+[url "git@github.com:"]
+	insteadOf = https://github.com/
+[core]
+    pager = delta
+[interactive]
+    diffFilter = delta
+[split-diffs]
+	theme-name = dark
