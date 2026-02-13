@@ -26,6 +26,7 @@ install_deps_apt() {
         tar \
         gzip \
         git \
+        zsh \
         fd-find \
         ripgrep \
         fzf \
