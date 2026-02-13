@@ -10,6 +10,12 @@ DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 install_deps_apt() {
     echo "==> Installing dependencies via apt..."
 
+    # Wait for any other apt process to finish (e.g. Coder startup script)
+    while sudo fuser /var/lib/apt/lists/lock &>/dev/null 2>&1; do
+        echo "waiting for apt lock..."
+        sleep 2
+    done
+
     sudo apt-get update -qq
 
     sudo apt-get install -y -qq \
