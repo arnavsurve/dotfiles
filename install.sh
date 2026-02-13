@@ -10,15 +10,16 @@ DOTFILES_DIR="$(cd "$(dirname "$0")" && pwd)"
 install_deps_apt() {
     echo "==> Installing dependencies via apt..."
 
-    # Wait for any other apt process to finish (e.g. Coder startup script)
-    while sudo fuser /var/lib/apt/lists/lock &>/dev/null 2>&1; do
+    # Wait for any other apt/dpkg process to finish (e.g. Coder startup script)
+    while sudo fuser /var/lib/dpkg/lock-frontend /var/lib/apt/lists/lock /var/lib/dpkg/lock &>/dev/null 2>&1; do
         echo "waiting for apt lock..."
-        sleep 2
+        sleep 3
     done
 
     sudo apt-get update -qq
 
-    sudo apt-get install -y -qq \
+    # Retry if dpkg lock is still held (startup script may grab it between commands)
+    sudo apt-get -o DPkg::Lock::Timeout=60 install -y -qq \
         build-essential \
         curl \
         unzip \
