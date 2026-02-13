@@ -136,6 +136,15 @@ else
     echo "ok: oh-my-zsh already installed"
 fi
 
+# Install custom themes (e.g. nara)
+if [ -d "$DOTFILES_DIR/zsh/custom/themes" ]; then
+    mkdir -p "$HOME/.oh-my-zsh/custom/themes"
+    for theme in "$DOTFILES_DIR/zsh/custom/themes"/*.zsh-theme; do
+        [ -f "$theme" ] && ln -sf "$theme" "$HOME/.oh-my-zsh/custom/themes/$(basename "$theme")"
+    done
+    echo "ok: custom themes linked"
+fi
+
 # ---------------------------------------------------------------------------
 # 3. Symlink dotfiles
 # ---------------------------------------------------------------------------

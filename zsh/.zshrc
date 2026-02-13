@@ -162,19 +162,25 @@ wt() {
 
 export PATH="$HOME/.local/bin:$PATH"
 
-eval "$(fnm env --use-on-cd)"
+# fnm (node version manager)
+export PATH="$HOME/.local/share/fnm:$PATH"
+command -v fnm &>/dev/null && eval "$(fnm env --use-on-cd)"
 
-corepack enable
+# corepack (needs sudo on Linux if node installed system-wide)
+if command -v corepack &>/dev/null; then
+    corepack enable 2>/dev/null || sudo corepack enable 2>/dev/null || true
+fi
 
-eval "$(direnv hook zsh)"
+# direnv
+command -v direnv &>/dev/null && eval "$(direnv hook zsh)"
 
-export PATH="$PATH:$(go env GOPATH)/bin"
-
-# bun completions
-[ -s "/Users/asurve/.bun/_bun" ] && source "/Users/asurve/.bun/_bun"
+# Go
+[ -d /usr/local/go/bin ] && export PATH="/usr/local/go/bin:$PATH"
+command -v go &>/dev/null && export PATH="$PATH:$(go env GOPATH)/bin"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
+[ -s "$BUN_INSTALL/_bun" ] && source "$BUN_INSTALL/_bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 # Sync split-diffs theme with macOS light/dark mode
