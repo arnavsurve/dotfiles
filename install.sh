@@ -117,7 +117,19 @@ esac
 echo "==> Dependencies installed."
 
 # ---------------------------------------------------------------------------
-# 2. Symlink dotfiles
+# 2. Oh My Zsh
+# ---------------------------------------------------------------------------
+
+if [ ! -d "$HOME/.oh-my-zsh" ]; then
+    echo "==> Installing Oh My Zsh..."
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    echo "ok: oh-my-zsh installed"
+else
+    echo "ok: oh-my-zsh already installed"
+fi
+
+# ---------------------------------------------------------------------------
+# 3. Symlink dotfiles
 # ---------------------------------------------------------------------------
 
 # source -> target
