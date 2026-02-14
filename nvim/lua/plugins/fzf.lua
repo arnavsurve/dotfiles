@@ -8,7 +8,6 @@ return {
       "default-title",
       defaults = {
         file_ignore_patterns = {
-          "node_modules/",
           ".git/",
           ".next/",
           "dist/",
@@ -21,6 +20,10 @@ return {
           ".turbo/",
           "coverage/",
         },
+      },
+      lsp = {
+        -- don't filter node_modules for LSP pickers (go-to-definition, references, etc.)
+        file_ignore_patterns = {},
       },
       winopts = {
         height = 0.85,

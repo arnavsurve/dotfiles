@@ -36,6 +36,7 @@ return {
 				"terraformls",
 				"yamlls",
 				"rust_analyzer",
+				"vtsls",
 			},
 			automatic_installation = true,
 			automatic_enable = false,
@@ -150,10 +151,9 @@ return {
 		})
 		vim.lsp.enable("sourcekit")
 
-		-- tsgo: native Go-based TypeScript server (not managed by Mason)
-		-- Install: npm install --global @typescript/native-preview
-		vim.lsp.config("tsgo", {
-			cmd = { "tsgo", "--lsp", "--stdio" },
+		-- vtsls: fast TypeScript server wrapping VS Code's TS extension
+		-- Install: :MasonInstall vtsls
+		vim.lsp.config("vtsls", {
 			capabilities = capabilities,
 			filetypes = {
 				"javascript",
@@ -169,7 +169,29 @@ return {
 				".git",
 			},
 		})
-		vim.lsp.enable("tsgo")
+		vim.lsp.enable("vtsls")
+
+		-- tsgo: native Go-based TypeScript server (not managed by Mason)
+		-- Install: npm install --global @typescript/native-preview
+		-- NOTE: experimental — go-to-definition doesn't work for some package types
+		-- vim.lsp.config("tsgo", {
+		-- 	cmd = { "tsgo", "--lsp", "--stdio" },
+		-- 	capabilities = capabilities,
+		-- 	filetypes = {
+		-- 		"javascript",
+		-- 		"javascriptreact",
+		-- 		"typescript",
+		-- 		"typescriptreact",
+		-- 	},
+		-- 	root_markers = {
+		-- 		"tsconfig.json",
+		-- 		"jsconfig.json",
+		-- 		"package.json",
+		-- 		"tsconfig.base.json",
+		-- 		".git",
+		-- 	},
+		-- })
+		-- vim.lsp.enable("tsgo")
 
 		mason_tool_installer.setup({
 			ensure_installed = {
