@@ -10,15 +10,6 @@ return {
 			severity_sort = true,
 		})
 
-		-- Better hover/signature display with border and width limit
-		vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
-			border = "rounded",
-			max_width = 80,
-		})
-		vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-			border = "rounded",
-			max_width = 80,
-		})
 
 		-- Set buffer-local LSP keymaps on attach for all servers
 		vim.api.nvim_create_autocmd("LspAttach", {
@@ -80,7 +71,9 @@ return {
 				end, opts)
 
 				opts.desc = "Hover docs"
-				vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+				vim.keymap.set("n", "K", function()
+				vim.lsp.buf.hover({ border = "rounded", max_width = 80 })
+			end, opts)
 
 				opts.desc = "Copy diagnostic to clipboard"
 				vim.keymap.set("n", "<leader>dc", function()

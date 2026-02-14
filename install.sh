@@ -67,6 +67,15 @@ install_deps_apt() {
     fi
     echo "ok: node $(node --version)"
 
+    # tree-sitter-cli (needed by nvim-treesitter to compile parsers)
+    if ! command -v tree-sitter &>/dev/null; then
+        echo "==> Installing tree-sitter-cli via npm..."
+        npm install -g tree-sitter-cli
+        echo "ok: tree-sitter $(tree-sitter --version)"
+    else
+        echo "ok: tree-sitter already installed"
+    fi
+
     # Go (official tarball, apt version is often outdated)
     if ! command -v go &>/dev/null; then
         echo "==> Installing Go..."
@@ -95,7 +104,8 @@ install_deps_brew() {
         lazygit \
         python3 \
         go \
-        fnm
+        fnm \
+        tree-sitter-cli
 
     if ! command -v node &>/dev/null; then
         echo "==> Installing Node.js LTS via fnm..."
