@@ -1,18 +1,15 @@
 return {
 	{
-		"arnavsurve/anysphere.nvim",
+		dir = "/Users/asurve/dev/anysphere.nvim",
+		lazy = true,
+	},
+
+	{
+		"bergholmm/cursor-dark.nvim",
 		lazy = false,
+		priority = 1000,
 		config = function()
-			local function set_tabline_hl()
-				vim.api.nvim_set_hl(0, "TabLineSel", { bg = "#ffffff", fg = "#1e1e1e", bold = true })
-				vim.api.nvim_set_hl(0, "TabLine", { bg = "#2d2d2d", fg = "#808080" })
-				vim.api.nvim_set_hl(0, "TabLineFill", { bg = "#1e1e1e" })
-			end
-			vim.api.nvim_create_autocmd("ColorScheme", {
-				callback = set_tabline_hl,
-			})
-			vim.cmd.colorscheme("anysphere")
-			set_tabline_hl()
+			vim.cmd.colorscheme("cursor-dark")
 		end,
 	},
 
