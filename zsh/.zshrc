@@ -108,9 +108,12 @@ export EDITOR='nvim'
 alias vi="nvim"
 alias lg="lazygit"
 alias y="yazi"
-alias ebiome="yarn biome check --fix . && yarn biome format --write ."
 alias claude="claude --dangerously-skip-permissions"
-alias remain="cd ~/dev/escher/main && git pull"
+
+# escher
+alias emain="cd ~/dev/escher/main && git pull"
+alias ebiome="yarn biome check --fix . && yarn biome format --write ."
+alias eroot="cd ~/dev/escher"
 
 unalias gd 2>/dev/null
 alias gd="$HOME/dev/gd/gd"
