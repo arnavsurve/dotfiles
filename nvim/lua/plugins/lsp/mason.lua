@@ -103,6 +103,11 @@ return {
 			},
 			gopls = {
 				filetypes = { "go", "gomod" },
+				settings = {
+					gopls = {
+						semanticTokens = true,
+					},
+				},
 			},
 			terraformls = {
 				filetypes = { "terraform", "tf", "tfvars", "hcl" },

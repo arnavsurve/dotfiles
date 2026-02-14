@@ -1,20 +1,20 @@
 return {
-	-- {
-	-- 	"arnavsurve/anysphere.nvim",
-	-- 	lazy = false,
-	-- 	-- config = function()
-	-- 	-- 	local function set_tabline_hl()
-	-- 	-- 		vim.api.nvim_set_hl(0, "TabLineSel", { bg = "#ffffff", fg = "#1e1e1e", bold = true })
-	-- 	-- 		vim.api.nvim_set_hl(0, "TabLine", { bg = "#2d2d2d", fg = "#808080" })
-	-- 	-- 		vim.api.nvim_set_hl(0, "TabLineFill", { bg = "#1e1e1e" })
-	-- 	-- 	end
-	-- 	-- 	vim.api.nvim_create_autocmd("ColorScheme", {
-	-- 	-- 		callback = set_tabline_hl,
-	-- 	-- 	})
-	-- 	-- 	vim.cmd.colorscheme("anysphere")
-	-- 	-- 	set_tabline_hl()
-	-- 	-- end,
-	-- },
+	{
+		"arnavsurve/anysphere.nvim",
+		lazy = false,
+		config = function()
+			local function set_tabline_hl()
+				vim.api.nvim_set_hl(0, "TabLineSel", { bg = "#ffffff", fg = "#1e1e1e", bold = true })
+				vim.api.nvim_set_hl(0, "TabLine", { bg = "#2d2d2d", fg = "#808080" })
+				vim.api.nvim_set_hl(0, "TabLineFill", { bg = "#1e1e1e" })
+			end
+			vim.api.nvim_create_autocmd("ColorScheme", {
+				callback = set_tabline_hl,
+			})
+			vim.cmd.colorscheme("anysphere")
+			set_tabline_hl()
+		end,
+	},
 
 	{
 		"EdenEast/nightfox.nvim",
@@ -93,8 +93,8 @@ return {
 	{
 		"Mofiqul/vscode.nvim",
 		lazy = false,
-		config = function()
-			vim.cmd.colorscheme("vscode")
-		end,
+		-- config = function()
+		-- 	vim.cmd.colorscheme("vscode")
+		-- end,
 	},
 }

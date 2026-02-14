@@ -18,3 +18,12 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 		vim.bo.commentstring = "# %s"
 	end,
 })
+
+-- Force-stop all LSP clients on quit to prevent terminal hanging
+vim.api.nvim_create_autocmd("VimLeavePre", {
+	callback = function()
+		for _, client in ipairs(vim.lsp.get_clients()) do
+			client:stop(true)
+		end
+	end,
+})

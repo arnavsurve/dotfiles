@@ -10,6 +10,16 @@ return {
 			severity_sort = true,
 		})
 
+		-- Better hover/signature display with border and width limit
+		vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, {
+			border = "rounded",
+			max_width = 80,
+		})
+		vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+			border = "rounded",
+			max_width = 80,
+		})
+
 		-- Set buffer-local LSP keymaps on attach for all servers
 		vim.api.nvim_create_autocmd("LspAttach", {
 			callback = function(args)
@@ -86,7 +96,22 @@ return {
 				end, opts)
 
 				opts.desc = "Restart LSP"
-				vim.keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
+				vim.keymap.set("n", "<leader>rs", function()
+					local clients = vim.lsp.get_clients({ bufnr = bufnr })
+					if #clients == 0 then
+						vim.notify("No LSP clients attached", vim.log.levels.WARN)
+						return
+					end
+					local names = {}
+					for _, client in ipairs(clients) do
+						table.insert(names, client.name)
+						client:stop(true)
+					end
+					vim.notify("Restarting: " .. table.concat(names, ", "), vim.log.levels.INFO)
+					vim.defer_fn(function()
+						vim.cmd("edit")
+					end, 200)
+				end, opts)
 			end,
 		})
 	end,
