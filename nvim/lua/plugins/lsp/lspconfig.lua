@@ -82,7 +82,12 @@ return {
 						vim.notify("No diagnostics on this line", vim.log.levels.WARN)
 						return
 					end
-					local msgs = vim.tbl_map(function(d) return d.message end, diags)
+					local file = vim.api.nvim_buf_get_name(0)
+					local msgs = vim.tbl_map(function(d)
+						local severity = vim.diagnostic.severity[d.severity] or "UNKNOWN"
+						local source = d.source or ""
+						return string.format("%s:%d:%d: %s [%s] %s", file, d.lnum + 1, d.col + 1, severity, source, d.message)
+					end, diags)
 					local text = table.concat(msgs, "\n")
 					vim.fn.setreg("+", text)
 					vim.notify("Copied " .. #msgs .. " diagnostic(s)", vim.log.levels.INFO)
