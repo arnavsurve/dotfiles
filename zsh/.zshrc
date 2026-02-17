@@ -155,6 +155,14 @@ wt() {
         cd "$dir"
       fi
       ;;
+    remote)
+      if [[ -z "$2" ]]; then
+        echo "Usage: wt remote <branch>"
+        return 1
+      fi
+      local branch="$2"
+      git fetch origin "$branch" && git worktree add "$branch" -b "$branch" "origin/$branch"
+      ;;
     ready)
         yarn install && doppler setup --no-interactive
         ;;
