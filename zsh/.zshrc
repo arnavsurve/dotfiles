@@ -161,7 +161,14 @@ wt() {
         return 1
       fi
       local branch="$2"
-      git fetch origin "$branch" && git worktree add "$branch" -b "$branch" "origin/$branch"
+      git fetch origin "$branch" || return 1
+      if git worktree list --porcelain | grep -q "branch refs/heads/$branch$"; then
+        echo "Worktree for '$branch' already exists, resetting to origin/$branch"
+        git -C "$branch" reset --hard "origin/$branch"
+      else
+        git branch -D "$branch" 2>/dev/null
+        git worktree add "$branch" -b "$branch" "origin/$branch"
+      fi
       ;;
     ready)
         yarn install && doppler setup --no-interactive
