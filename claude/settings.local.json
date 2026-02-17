@@ -1,0 +1,36 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(fzf:*)",
+      "Bash(alias:*)",
+      "Bash(git-split-diffs:*)",
+      "WebSearch",
+      "Bash(go mod init:*)",
+      "Bash(go get:*)",
+      "Bash(go build:*)",
+      "Bash(go mod tidy:*)",
+      "Bash(chmod:*)",
+      "Bash(git push:*)",
+      "Bash(gh release create v0.1.0 --title \"v0.1.0\" --notes \"$\\(cat <<''EOF''\nInitial release.\n\n- Interactive file tree browser with directory nesting\n- Syntax-highlighted diffs \\(powered by chroma\\)\n- Responsive layout: side-by-side when wide, stacked when narrow\n- Full-file diff view in less \\(enter to open, q to return\\)\n- File search with /\n- `--main` flag to diff against main branch\n- Shows staged, unstaged, and untracked files\nEOF\n\\)\")",
+      "WebFetch(domain:goreleaser.com)",
+      "Bash(ls:*)",
+      "Bash(brew install:*)",
+      "Bash(goreleaser check:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(goreleaser release:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr diff:*)",
+      "Bash(gh api:*)",
+      "Bash(git fetch:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(git rm:*)",
+      "Bash(ln:*)",
+      "Bash(source:*)",
+      "Bash(echo:*)",
+      "Bash(nvim --version:*)",
+      "Bash(git config:*)"
+    ]
+  }
+}

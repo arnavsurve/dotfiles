@@ -9,6 +9,9 @@ declare -A LINKS=(
     ["$DOTFILES_DIR/git/.gitconfig"]="$HOME/.gitconfig"
     ["$DOTFILES_DIR/nvim"]="$HOME/.config/nvim"
     ["$DOTFILES_DIR/ghostty"]="$HOME/.config/ghostty"
+    ["$DOTFILES_DIR/claude/settings.json"]="$HOME/.claude/settings.json"
+    ["$DOTFILES_DIR/claude/settings.local.json"]="$HOME/.claude/settings.local.json"
+    ["$DOTFILES_DIR/claude/skills"]="$HOME/.claude/skills"
 )
 
 for src in "${!LINKS[@]}"; do
