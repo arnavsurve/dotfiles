@@ -22,17 +22,18 @@ else # root
 fi
 
 # Check if we are on SSH or not
-if [[ -n "$SSH_CLIENT"  ||  -n "$SSH2_CLIENT" ]]; then
-  PR_HOST='%F{red}%M%f' # SSH
-else
-  PR_HOST='%F{green}%m%f' # no SSH
+local PR_REMOTE=""
+if [[ -n "$CODER_WORKSPACE_NAME" ]]; then
+  PR_REMOTE="%F{magenta}[coder:${CODER_WORKSPACE_NAME}]%f "
+elif [[ -n "$SSH_CLIENT" || -n "$SSH2_CLIENT" ]]; then
+  PR_REMOTE="%F{magenta}[ssh:%M]%f "
 fi
 
 local user_host="${PR_USER}%F{cyan}@${PR_HOST}"
 local current_dir="%B%F{blue}%~%f%b"
 
 # PROMPT='${user_host}$fg[white]%} ॐ  %{$reset_color%}%{$fg[cyan]%}%~ %{$reset_color%}$(git_prompt_info)
-PROMPT='${fg[white]}ॐ  %{$reset_color%}%{$fg[cyan]%}%~ %{$reset_color%}$(git_prompt_info)
+PROMPT="${PR_REMOTE}"'${fg[white]}ॐ  %{$reset_color%}%{$fg[cyan]%}%~ %{$reset_color%}$(git_prompt_info)
 $(prompt_char) '
 
 ZSH_THEME_GIT_PROMPT_PREFIX="\uf418 %{$fg[blue]%}%{$reset_color%}%[%]$fg_bold[white]%}"

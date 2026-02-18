@@ -94,4 +94,9 @@ return {
 		-- 	vim.cmd.colorscheme("vscode")
 		-- end,
 	},
+
+	{
+		"folke/tokyonight.nvim",
+		lazy = false,
+	},
 }
