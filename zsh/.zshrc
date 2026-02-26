@@ -109,10 +109,11 @@ alias vi="nvim"
 alias lg="lazygit"
 alias y="yazi"
 alias claude="claude --dangerously-skip-permissions"
+alias pwdc="pwd | pbcopy"
 
 # escher
 alias emain="cd ~/dev/escher/main && git pull"
-alias ebiome="yarn biome check --fix . && yarn biome format --write ."
+alias eox="yarn run lint && yarn run format"
 alias eroot="cd ~/dev/escher"
 
 unalias gd 2>/dev/null
