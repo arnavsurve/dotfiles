@@ -128,7 +128,7 @@ wt() {
       fi
       local branch="$2"
       local upstream="${3:-main}"
-      git worktree add "$branch" -b "$branch" "$upstream"
+      git worktree add "$branch" -b "$branch" "$upstream" && cd "$branch"
       ;;
     ls)
       shift
@@ -169,6 +169,7 @@ wt() {
         git branch -D "$branch" 2>/dev/null
         git worktree add "$branch" -b "$branch" "origin/$branch"
       fi
+      [[ -d "$branch" ]] && cd "$branch"
       ;;
     ready)
         yarn install && doppler setup --no-interactive
