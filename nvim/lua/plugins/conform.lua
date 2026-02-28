@@ -1,3 +1,13 @@
+--- Pick oxfmt when the project has .oxfmtrc.json, otherwise biome.
+local function web_formatter(bufnr)
+	local bufname = vim.api.nvim_buf_get_name(bufnr)
+	local dir = vim.fs.dirname(bufname)
+	if vim.fs.find(".oxfmtrc.json", { upward = true, path = dir })[1] then
+		return { "oxfmt" }
+	end
+	return { "biome" }
+end
+
 return {
 	"stevearc/conform.nvim",
 	opts = {
@@ -6,12 +16,12 @@ return {
 			python = { "isort", "black" },
 			css = { "biome" },
 			html = { "biome" },
-			javascript = { "biome" },
-			javascriptreact = { "biome" },
-			typescript = { "biome" },
-			typescriptreact = { "biome" },
-			json = { "biome" },
-			jsonc = { "biome" },
+			javascript = web_formatter,
+			javascriptreact = web_formatter,
+			typescript = web_formatter,
+			typescriptreact = web_formatter,
+			json = web_formatter,
+			jsonc = web_formatter,
 			kotlin = { "ktlint" },
 			java = { "google-java-format" },
 			go = { "gofumpt" },

@@ -111,6 +111,23 @@ alias y="yazi"
 alias claude="claude --dangerously-skip-permissions"
 alias pwdc="pwd | pbcopy"
 
+# bare clone a repo for worktree-based development
+# usage: gbare <repo-url> [directory]
+gbare() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: gbare <repo-url> [directory]"
+    return 1
+  fi
+  local repo="$1"
+  local dir="${2:-$(basename "$repo" .git)}"
+  mkdir -p "$dir" && cd "$dir" \
+    && git clone --bare "$repo" .bare \
+    && echo "gitdir: ./.bare" > .git \
+    && git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*" \
+    && git fetch origin \
+    && echo "Bare repo ready in $(pwd). Use 'wt add <branch>' to create worktrees."
+}
+
 # escher
 alias emain="cd ~/dev/escher/main && git pull"
 alias eox="yarn run lint && yarn run format"
