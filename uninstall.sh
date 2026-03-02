@@ -12,6 +12,7 @@ declare -A LINKS=(
     ["$DOTFILES_DIR/claude/settings.json"]="$HOME/.claude/settings.json"
     ["$DOTFILES_DIR/claude/settings.local.json"]="$HOME/.claude/settings.local.json"
     ["$DOTFILES_DIR/claude/skills"]="$HOME/.claude/skills"
+    ["$DOTFILES_DIR/lazygit/config.yml"]="$HOME/.config/lazygit/config.yml"
 )
 
 for src in "${!LINKS[@]}"; do
