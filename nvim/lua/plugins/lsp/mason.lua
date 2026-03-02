@@ -171,6 +171,14 @@ return {
 		})
 		vim.lsp.enable("vtsls")
 
+		-- oxlint: linter for JS/TS via oxc (installed by Mason)
+		-- Activates only in projects with .oxlintrc.json or oxlint.config.mts
+		vim.lsp.config("oxlint", {
+			capabilities = capabilities,
+			root_markers = { ".oxlintrc.json", "oxlint.config.mts" },
+		})
+		vim.lsp.enable("oxlint")
+
 		-- tsgo: native Go-based TypeScript server (not managed by Mason)
 		-- Install: npm install --global @typescript/native-preview
 		-- NOTE: experimental — go-to-definition doesn't work for some package types
@@ -202,6 +210,7 @@ return {
 				"mypy",
 				"debugpy",
 				"biome",
+				"oxlint",
 				"golangci-lint",
 				"google-java-format",
 				"gofumpt",
