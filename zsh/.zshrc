@@ -109,6 +109,7 @@ alias vi="nvim"
 alias lg="lazygit"
 alias y="yazi"
 alias claude="claude --dangerously-skip-permissions"
+alias codex="codex --dangerously-bypass-approvals-and-sandbox"
 alias pwdc="pwd | pbcopy"
 
 # bare clone a repo for worktree-based development
