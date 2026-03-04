@@ -1,0 +1,8 @@
+{
+  "name": "streamsh-pi-extension",
+  "private": true,
+  "dependencies": {
+    "@mariozechner/pi-coding-agent": "*",
+    "@sinclair/typebox": "*"
+  }
+}

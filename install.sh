@@ -166,14 +166,21 @@ declare -A LINKS=(
     ["$DOTFILES_DIR/git/.gitconfig"]="$HOME/.gitconfig"
     ["$DOTFILES_DIR/nvim"]="$HOME/.config/nvim"
     ["$DOTFILES_DIR/ghostty"]="$HOME/.config/ghostty"
-    ["$DOTFILES_DIR/claude/CLAUDE.md"]="$HOME/.claude/CLAUDE.md"
     ["$DOTFILES_DIR/claude/settings.json"]="$HOME/.claude/settings.json"
     ["$DOTFILES_DIR/claude/settings.local.json"]="$HOME/.claude/settings.local.json"
     ["$DOTFILES_DIR/claude/skills"]="$HOME/.claude/skills"
     ["$DOTFILES_DIR/lazygit/config.yml"]="$HOME/.config/lazygit/config.yml"
+    ["$DOTFILES_DIR/pi/extensions/streamsh"]="$HOME/.pi/agent/extensions/streamsh"
 )
 
-mkdir -p "$HOME/.config" "$HOME/.claude" "$HOME/.config/lazygit"
+# AGENTS.md is the single source of truth for all agents
+AGENTS_TARGETS=(
+    "$HOME/AGENTS.md"
+    "$HOME/.claude/CLAUDE.md"
+    "$HOME/.pi/agent/AGENTS.md"
+)
+
+mkdir -p "$HOME/.config" "$HOME/.claude" "$HOME/.config/lazygit" "$HOME/.pi/agent/extensions"
 
 for src in "${!LINKS[@]}"; do
     target="${LINKS[$src]}"
@@ -193,6 +200,24 @@ for src in "${!LINKS[@]}"; do
         echo "removed stale symlink: $target"
     fi
 
+    ln -s "$src" "$target"
+    echo "linked: $target -> $src"
+done
+
+# Symlink AGENTS.md to all agent config locations
+for target in "${AGENTS_TARGETS[@]}"; do
+    src="$DOTFILES_DIR/AGENTS.md"
+    if [ -L "$target" ] && [ "$(readlink "$target")" = "$src" ]; then
+        echo "ok: $target -> $src (already linked)"
+        continue
+    fi
+    if [ -e "$target" ] && [ ! -L "$target" ]; then
+        mv "$target" "${target}.bak"
+        echo "backed up: $target -> ${target}.bak"
+    elif [ -L "$target" ]; then
+        rm "$target"
+        echo "removed stale symlink: $target"
+    fi
     ln -s "$src" "$target"
     echo "linked: $target -> $src"
 done
