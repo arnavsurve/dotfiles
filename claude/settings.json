@@ -1,5 +1,8 @@
 {
   "model": "opus[1m]",
   "fastMode": true,
+  "enabledPlugins": {
+    "linear-cli@linear-cli": true
+  },
   "skipDangerousModePermissionPrompt": true
 }

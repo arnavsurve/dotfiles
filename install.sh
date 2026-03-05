@@ -166,32 +166,33 @@ declare -A LINKS=(
     ["$DOTFILES_DIR/git/.gitconfig"]="$HOME/.gitconfig"
     ["$DOTFILES_DIR/nvim"]="$HOME/.config/nvim"
     ["$DOTFILES_DIR/ghostty"]="$HOME/.config/ghostty"
+    ["$DOTFILES_DIR/lazygit/config.yml"]="$HOME/.config/lazygit/config.yml"
+    ["$DOTFILES_DIR/iterm2/com.googlecode.iterm2.plist"]="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
     ["$DOTFILES_DIR/claude/settings.json"]="$HOME/.claude/settings.json"
     ["$DOTFILES_DIR/claude/settings.local.json"]="$HOME/.claude/settings.local.json"
-    ["$DOTFILES_DIR/claude/skills"]="$HOME/.claude/skills"
-    ["$DOTFILES_DIR/lazygit/config.yml"]="$HOME/.config/lazygit/config.yml"
-    ["$DOTFILES_DIR/pi/extensions/streamsh"]="$HOME/.pi/agent/extensions/streamsh"
+    ["$DOTFILES_DIR/pi/AGENTS.md"]="$HOME/.pi/agent/AGENTS.md"
+    ["$DOTFILES_DIR/pi/agents"]="$HOME/.pi/agent/agents"
+    ["$DOTFILES_DIR/pi/mcp.json"]="$HOME/.pi/agent/mcp.json"
+    ["$DOTFILES_DIR/pi/models.json"]="$HOME/.pi/agent/models.json"
+    ["$DOTFILES_DIR/pi/prompts"]="$HOME/.pi/agent/prompts"
+    ["$DOTFILES_DIR/pi/settings.json"]="$HOME/.pi/agent/settings.json"
+    ["$DOTFILES_DIR/pi/themes"]="$HOME/.pi/agent/themes"
 )
 
 # AGENTS.md is the single source of truth for all agents
 AGENTS_TARGETS=(
     "$HOME/AGENTS.md"
     "$HOME/.claude/CLAUDE.md"
-    "$HOME/.pi/agent/AGENTS.md"
 )
 
 mkdir -p "$HOME/.config" "$HOME/.claude" "$HOME/.config/lazygit" "$HOME/.pi/agent/extensions"
 
-for src in "${!LINKS[@]}"; do
-    target="${LINKS[$src]}"
-
-    # Already correctly linked
+link_file() {
+    local src="$1" target="$2"
     if [ -L "$target" ] && [ "$(readlink "$target")" = "$src" ]; then
         echo "ok: $target -> $src (already linked)"
-        continue
+        return
     fi
-
-    # Back up existing file/dir that isn't a symlink
     if [ -e "$target" ] && [ ! -L "$target" ]; then
         mv "$target" "${target}.bak"
         echo "backed up: $target -> ${target}.bak"
@@ -199,25 +200,29 @@ for src in "${!LINKS[@]}"; do
         rm "$target"
         echo "removed stale symlink: $target"
     fi
-
     ln -s "$src" "$target"
     echo "linked: $target -> $src"
+}
+
+for src in "${!LINKS[@]}"; do
+    link_file "$src" "${LINKS[$src]}"
 done
 
-# Symlink AGENTS.md to all agent config locations
+# AGENTS.md -> all agent config locations
 for target in "${AGENTS_TARGETS[@]}"; do
-    src="$DOTFILES_DIR/AGENTS.md"
-    if [ -L "$target" ] && [ "$(readlink "$target")" = "$src" ]; then
-        echo "ok: $target -> $src (already linked)"
-        continue
-    fi
-    if [ -e "$target" ] && [ ! -L "$target" ]; then
-        mv "$target" "${target}.bak"
-        echo "backed up: $target -> ${target}.bak"
-    elif [ -L "$target" ]; then
-        rm "$target"
-        echo "removed stale symlink: $target"
-    fi
-    ln -s "$src" "$target"
-    echo "linked: $target -> $src"
+    link_file "$DOTFILES_DIR/AGENTS.md" "$target"
+done
+
+# Claude skills: link each skill dir individually (some skills like frontend-design
+# are external symlinks managed outside dotfiles, so we can't symlink the whole dir)
+for skill in "$DOTFILES_DIR/claude/skills"/*/; do
+    [ -d "$skill" ] || continue
+    link_file "$skill" "$HOME/.claude/skills/$(basename "$skill")"
+done
+
+# Pi extensions: link each extension individually so non-dotfiles extensions can coexist
+for ext in "$DOTFILES_DIR/pi/extensions"/*; do
+    name="$(basename "$ext")"
+    [[ "$name" == "package-lock.json" ]] && continue
+    link_file "$ext" "$HOME/.pi/agent/extensions/$name"
 done
