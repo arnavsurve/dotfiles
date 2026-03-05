@@ -35,3 +35,9 @@ When asked to spin off new work or work in a new worktree:
 - Don't write comments that restate what the code already says
 - Only comment non-obvious logic: subtle invariants, unintuitive workarounds, "why" not "what"
 - No section-header comments unless the file is genuinely long and complex
+
+### Markdown
+
+- If instructed to edit a markdown document, maintain existing formatting patterns
+    - For example, if told to modify a `todo.md` on the desktop - don't overwrite existing human written todos or headings. Just modify additively
+    - For things like `PLAN.md`s in repos used for iteration and planning, this does not apply
