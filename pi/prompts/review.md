@@ -22,4 +22,11 @@ Review the open PR for the current branch. Use `gh pr view` to get the PR detail
 
 ---
 
+## General guidelines
+
+- Don't bikeshed. Ignore stylistic nitpicks, subjective naming preferences, or trivial formatting unless it genuinely hurts readability. Focus on things that matter: correctness, security, performance, maintainability.
+- If something is fine but you'd do it differently, skip it. Only flag issues you'd actually block a PR on.
+
+---
+
 If no mode is provided or the mode is unrecognized, list the available modes and ask which one to use.
