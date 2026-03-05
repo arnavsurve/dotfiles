@@ -135,7 +135,6 @@ alias eox="yarn run lint && yarn run format"
 alias eroot="cd ~/dev/escher"
 
 unalias gd 2>/dev/null
-alias gd="$HOME/dev/gd/gd"
 
 # worktrees
 wt() {
