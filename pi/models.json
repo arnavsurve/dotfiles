@@ -1,0 +1,14 @@
+{
+  "providers": {
+    "anthropic": {
+      "modelOverrides": {
+        "claude-opus-4-6": {
+          "contextWindow": 1000000,
+          "headers": {
+            "anthropic-beta": "context-1m-2025-08-07"
+          }
+        }
+      }
+    }
+  }
+}

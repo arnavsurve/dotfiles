@@ -1,0 +1,61 @@
+{
+  "mcpServers": {
+    "streamsh": {
+      "command": "streamshd",
+      "lifecycle": "eager",
+      "directTools": true
+    },
+    "gitmind": {
+      "command": "node",
+      "args": ["/Users/asurve/dev/gitmind/dist/index.js"],
+      "env": {
+        "GITMIND_DB": "/Users/asurve/.gitmind/memory.db"
+      },
+      "lifecycle": "eager",
+      "directTools": true
+    },
+    "paper": {
+      "type": "http",
+      "url": "http://127.0.0.1:29979/mcp",
+      "directTools": true
+    },
+    "cloudwatch-prd": {
+      "command": "doppler",
+      "args": [
+        "run",
+        "--project",
+        "cloudwatch-readonly",
+        "--config",
+        "prd",
+        "--",
+        "uvx",
+        "--from",
+        "git+https://github.com/awslabs/Log-Analyzer-with-MCP",
+        "cw-mcp-server",
+        "--region",
+        "us-east-2"
+      ],
+      "lifecycle": "eager",
+      "directTools": true
+    },
+    "cloudwatch-stg": {
+      "command": "doppler",
+      "args": [
+        "run",
+        "--project",
+        "cloudwatch-readonly",
+        "--config",
+        "stg",
+        "--",
+        "uvx",
+        "--from",
+        "git+https://github.com/awslabs/Log-Analyzer-with-MCP",
+        "cw-mcp-server",
+        "--region",
+        "us-east-2"
+      ],
+      "lifecycle": "eager",
+      "directTools": true
+    }
+  }
+}

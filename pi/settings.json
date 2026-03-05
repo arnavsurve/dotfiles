@@ -1,0 +1,13 @@
+{
+  "lastChangelogVersion": "0.56.1",
+  "showHardwareCursor": false,
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-4-6",
+  "defaultThinkingLevel": "medium",
+  "editorPaddingX": 0,
+  "packages": [
+    "npm:pi-mcp-adapter",
+    "npm:pi-web-search"
+  ],
+  "theme": "cursor-dark"
+}
