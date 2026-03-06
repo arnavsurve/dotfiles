@@ -1,7 +1,7 @@
 ---
 description: "Review code: unstaged | staged | branch | pr | pr-post"
 ---
-Review code with mode: **$1**
+Review code with mode: **$1** $2
 
 Depending on the mode, follow the corresponding instructions:
 
@@ -15,10 +15,10 @@ Review only staged changes (`git diff --cached`). Focus on bugs, logic errors, s
 Review the full implementation on this branch compared to the base branch. Use `git log --oneline main..HEAD` and `git diff main...HEAD` (or the appropriate base branch) to understand the scope. Provide a holistic review covering architecture, correctness, error handling, naming, test coverage, and any loose ends or TODOs.
 
 ## Mode: `pr`
-Review the open PR for the current branch. Use `gh pr view` to get the PR details and `gh pr diff` to get the changes. Review the full diff like a thorough code reviewer — architecture, correctness, edge cases, naming, test coverage. Summarize findings in chat.
+Review a PR. If a PR URL is provided as the second argument, use that (e.g. `gh pr view <url>`, `gh pr diff <url>`). Otherwise, use the open PR for the current branch (`gh pr view`, `gh pr diff`). Review the full diff like a thorough code reviewer — architecture, correctness, edge cases, naming, test coverage. Summarize findings in chat.
 
 ## Mode: `pr-post`
-Review the open PR for the current branch. Use `gh pr view` to get the PR details and `gh pr diff` to get the changes. Write a thorough review, then post it using `gh pr review` with appropriate flags (`--comment`, `--approve`, or `--request-changes`) and a well-structured review body. Ask me which action to take before posting.
+Review a PR and post the review. If a PR URL is provided as the second argument, use that (e.g. `gh pr view <url>`, `gh pr diff <url>`, `gh pr review <url>`). Otherwise, use the open PR for the current branch. Write a thorough review, then post it using `gh pr review` with appropriate flags (`--comment`, `--approve`, or `--request-changes`) and a well-structured review body. Ask me which action to take before posting.
 
 ---
 
