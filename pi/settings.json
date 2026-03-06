@@ -1,5 +1,5 @@
 {
-  "lastChangelogVersion": "0.56.1",
+  "lastChangelogVersion": "0.56.2",
   "showHardwareCursor": false,
   "defaultProvider": "anthropic",
   "defaultModel": "claude-opus-4-6",
