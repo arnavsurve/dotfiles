@@ -208,16 +208,28 @@ function truncateMessage(text: string, maxChars: number): string {
 	return text.slice(0, maxChars) + "…";
 }
 
-const SUGGEST_SYSTEM_PROMPT = `You are a suggestion engine for a coding assistant chat. Based on the conversation so far, predict the most likely next message the user would send. 
+const SUGGEST_SYSTEM_PROMPT = `You are a suggestion engine for a coding assistant chat. Based on the conversation, predict what the user would OBVIOUSLY say next — but ONLY if it's highly predictable.
 
 Rules:
 - Output ONLY the suggested message text, nothing else
-- Keep suggestions concise (1-2 sentences max)
-- Suggest actionable follow-ups: asking for changes, requesting explanations, pointing out issues, asking to continue
-- If the assistant just completed a task, suggest a natural follow-up like reviewing the result, making a modification, or moving to the next step
-- If the assistant asked a question, suggest the most likely answer
-- Don't suggest generic messages like "thanks" or "looks good"
-- Suggest something specific and useful based on the conversation context`;
+- If there is no clearly obvious next message, output exactly: NONE
+- Output NONE most of the time. Only suggest when the next message is near-certain:
+  - The assistant asked a direct yes/no or choice question and the answer is obvious
+  - The user was clearly in the middle of a multi-step workflow and the next step is unambiguous
+  - The assistant asked for confirmation to proceed with something
+- Do NOT suggest when:
+  - The assistant just finished a task (the user could do anything next)
+  - The conversation is open-ended
+  - You're guessing at what might be useful rather than what's predictable
+  - The suggestion would be generic like "looks good", "thanks", "continue", etc.
+- Keep suggestions concise (1 sentence max)`;
+
+function parseSuggestion(raw: string | undefined | null): string | null {
+	const text = raw?.trim();
+	if (!text) return null;
+	if (text.toUpperCase() === "NONE") return null;
+	return text;
+}
 
 async function callAnthropic(opts: {
 	apiKey: string;
@@ -242,7 +254,7 @@ async function callAnthropic(opts: {
 			system: SUGGEST_SYSTEM_PROMPT,
 			messages: [
 				...opts.messages.map((m) => ({ role: m.role, content: m.content })),
-				{ role: "user", content: "Based on this conversation, what would be the most useful next message I could send? Reply with ONLY that message text." },
+				{ role: "user", content: "What would I obviously say next? Reply with ONLY that message, or NONE if it's not predictable." },
 			],
 		}),
 		signal: opts.signal,
@@ -250,7 +262,7 @@ async function callAnthropic(opts: {
 
 	if (!response.ok) return null;
 	const data: any = await response.json();
-	return data?.content?.[0]?.text?.trim() || null;
+	return parseSuggestion(data?.content?.[0]?.text);
 }
 
 async function callOpenAI(opts: {
@@ -277,7 +289,7 @@ async function callOpenAI(opts: {
 
 	if (!response.ok) return null;
 	const data: any = await response.json();
-	return data?.choices?.[0]?.message?.content?.trim() || null;
+	return parseSuggestion(data?.choices?.[0]?.message?.content);
 }
 
 async function callGoogle(opts: {
@@ -307,5 +319,5 @@ async function callGoogle(opts: {
 
 	if (!response.ok) return null;
 	const data: any = await response.json();
-	return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || null;
+	return parseSuggestion(data?.candidates?.[0]?.content?.parts?.[0]?.text);
 }
