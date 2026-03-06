@@ -38,10 +38,13 @@ async function getPool(): Promise<pg.Pool> {
 	if (pool) return pool;
 
 	const { execSync } = await import("node:child_process");
-	const url = execSync("doppler secrets get DATABASE_URL --plain --project read-only-db-replica --config prd", {
-		encoding: "utf-8",
-		timeout: 10_000,
-	}).trim();
+	const url = execSync(
+		"doppler secrets get DATABASE_URL --plain --project read-only-db-replica --config prd",
+		{
+			encoding: "utf-8",
+			timeout: 10_000,
+		},
+	).trim();
 
 	pool = new pg.Pool({
 		connectionString: url,
@@ -69,7 +72,12 @@ export default function (pi: ExtensionAPI) {
 
 			if (!isReadOnly(sql)) {
 				return {
-					content: [{ type: "text" as const, text: "Error: Only SELECT / WITH / EXPLAIN queries are allowed." }],
+					content: [
+						{
+							type: "text" as const,
+							text: "Error: Only SELECT / WITH / EXPLAIN queries are allowed.",
+						},
+					],
 					details: { error: true },
 				};
 			}

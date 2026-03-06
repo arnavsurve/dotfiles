@@ -67,12 +67,16 @@ class TodoListComponent {
 		lines.push("");
 		const title = th.fg("accent", " Todos ");
 		const headerLine =
-			th.fg("borderMuted", "─".repeat(3)) + title + th.fg("borderMuted", "─".repeat(Math.max(0, width - 10)));
+			th.fg("borderMuted", "─".repeat(3)) +
+			title +
+			th.fg("borderMuted", "─".repeat(Math.max(0, width - 10)));
 		lines.push(truncateToWidth(headerLine, width));
 		lines.push("");
 
 		if (this.todos.length === 0) {
-			lines.push(truncateToWidth(`  ${th.fg("dim", "No todos yet. Ask the agent to add some!")}`, width));
+			lines.push(
+				truncateToWidth(`  ${th.fg("dim", "No todos yet. Ask the agent to add some!")}`, width),
+			);
 		} else {
 			const done = this.todos.filter((t) => t.done).length;
 			const total = this.todos.length;
@@ -160,7 +164,12 @@ export default function (pi: ExtensionAPI) {
 					if (!params.text) {
 						return {
 							content: [{ type: "text", text: "Error: text required for add" }],
-							details: { action: "add", todos: [...todos], nextId, error: "text required" } as TodoDetails,
+							details: {
+								action: "add",
+								todos: [...todos],
+								nextId,
+								error: "text required",
+							} as TodoDetails,
 						};
 					}
 					const newTodo: Todo = { id: nextId++, text: params.text, done: false };
@@ -175,7 +184,12 @@ export default function (pi: ExtensionAPI) {
 					if (params.id === undefined) {
 						return {
 							content: [{ type: "text", text: "Error: id required for toggle" }],
-							details: { action: "toggle", todos: [...todos], nextId, error: "id required" } as TodoDetails,
+							details: {
+								action: "toggle",
+								todos: [...todos],
+								nextId,
+								error: "id required",
+							} as TodoDetails,
 						};
 					}
 					const todo = todos.find((t) => t.id === params.id);
@@ -192,7 +206,9 @@ export default function (pi: ExtensionAPI) {
 					}
 					todo.done = !todo.done;
 					return {
-						content: [{ type: "text", text: `Todo #${todo.id} ${todo.done ? "completed" : "uncompleted"}` }],
+						content: [
+							{ type: "text", text: `Todo #${todo.id} ${todo.done ? "completed" : "uncompleted"}` },
+						],
 						details: { action: "toggle", todos: [...todos], nextId } as TodoDetails,
 					};
 				}
