@@ -18,4 +18,4 @@ Open a PR. Use the commit messages to inform the PR title and body. If there's o
 
 ---
 
-If no mode is provided or the mode is unrecognized, default to `pr`.
+If no mode is provided or the mode is unrecognized, default to `push`.
