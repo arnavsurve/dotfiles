@@ -15,43 +15,35 @@ interface PrInfo {
 }
 
 export default function (pi: ExtensionAPI) {
-	let prInfo: PrInfo | null = null;
-	let checked = false;
+	let injected = false;
 
-	async function fetchPr(): Promise<PrInfo | null> {
-		if (checked) return prInfo;
-		checked = true;
+	pi.on("before_agent_start", async (_event, _ctx) => {
+		if (injected) return;
 
 		try {
 			const result = await pi.exec("gh", [
 				"pr", "view", "--json", "number,title,url,state,reviewDecision",
 			], { timeout: 5000 });
 
-			if (result.code !== 0) return null;
+			if (result.code !== 0) return;
 			const data = JSON.parse(result.stdout);
-			if (data.state !== "OPEN") return null;
+			if (data.state !== "OPEN") return;
 
-			prInfo = data;
-			return prInfo;
+			injected = true;
+
+			const review = data.reviewDecision
+				? ` | review: ${data.reviewDecision}`
+				: "";
+
+			return {
+				message: {
+					customType: "pr-context",
+					content: `[PR #${data.number}] ${data.title} (${data.url}${review})`,
+					display: false,
+				},
+			};
 		} catch {
-			return null;
+			return;
 		}
-	}
-
-	pi.on("before_agent_start", async (_event, _ctx) => {
-		const pr = await fetchPr();
-		if (!pr) return;
-
-		const review = pr.reviewDecision
-			? ` | review: ${pr.reviewDecision}`
-			: "";
-
-		return {
-			message: {
-				customType: "pr-context",
-				content: `[PR #${pr.number}] ${pr.title} (${pr.url}${review})`,
-				display: false,
-			},
-		};
 	});
 }
