@@ -37,7 +37,14 @@ export default function (pi: ExtensionAPI) {
 					const statuses = footerData.getExtensionStatuses();
 					const statusStr = statuses.size > 0 ? " " + [...statuses.values()].join(" ") : "";
 
-					const left = theme.fg("dim", `↑${fmt(input)} ↓${fmt(output)} $${cost.toFixed(3)}`)
+					const usage = ctx.getContextUsage();
+					let ctxPart = "";
+					if (usage) {
+						const pct = Math.round((usage.tokens / usage.contextWindow) * 100);
+						ctxPart = ` ctx:${fmt(usage.tokens)}/${fmt(usage.contextWindow)} ${pct}%`;
+					}
+
+					const left = theme.fg("dim", `↑${fmt(input)} ↓${fmt(output)} $${cost.toFixed(3)}${ctxPart}`)
 						+ statusStr
 						+ " "
 						+ theme.fg("muted", cwd);
