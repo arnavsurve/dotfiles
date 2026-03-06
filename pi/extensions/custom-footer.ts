@@ -45,7 +45,7 @@ export default function (pi: ExtensionAPI) {
 					let ctxPart = "";
 					if (usage) {
 						const pct = Math.round((usage.tokens / usage.contextWindow) * 100);
-						ctxPart = ` ctx:${fmt(usage.tokens)}/${fmt(usage.contextWindow)} ${pct}%`;
+						ctxPart = ` ctx: ${fmt(usage.tokens)}/${fmt(usage.contextWindow)} (${pct}%)`;
 					}
 
 					const left = theme.fg("dim", `↑${fmt(input)} ↓${fmt(output)} $${cost.toFixed(3)}${ctxPart}`)
