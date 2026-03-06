@@ -10,7 +10,7 @@
 
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { isEditToolResult, isWriteToolResult } from "@mariozechner/pi-coding-agent";
-import { lintJsxCode, getAllRuleNames, getRulesForPlatform } from "laint";
+import { lintJsxCode } from "laint";
 import type { LintConfig, LintResult } from "laint";
 import * as fs from "node:fs";
 import * as path from "node:path";

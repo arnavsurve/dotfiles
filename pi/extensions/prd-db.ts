@@ -67,10 +67,12 @@ export default function (pi: ExtensionAPI) {
 			query: Type.String({ description: "SQL SELECT query to execute" }),
 		}),
 
-		async execute(_toolCallId, params) {
+		async execute(_toolCallId: string, params: { query: string }) {
+			type Details = { error: boolean; rowCount?: number; fields?: string[] };
 			const sql = params.query.trim();
 
 			if (!isReadOnly(sql)) {
+				const details: Details = { error: true };
 				return {
 					content: [
 						{
@@ -78,7 +80,7 @@ export default function (pi: ExtensionAPI) {
 							text: "Error: Only SELECT / WITH / EXPLAIN queries are allowed.",
 						},
 					],
-					details: { error: true },
+					details,
 				};
 			}
 
@@ -89,7 +91,7 @@ export default function (pi: ExtensionAPI) {
 				const result = await p.query(finalSql);
 
 				const rowCount = result.rows.length;
-				const fields = result.fields.map((f) => f.name);
+				const fields = result.fields.map((f: { name: string }) => f.name);
 
 				let output: string;
 				if (rowCount === 0) {
@@ -98,15 +100,17 @@ export default function (pi: ExtensionAPI) {
 					output = `${rowCount} row(s) returned.\n\n${JSON.stringify(result.rows, null, 2)}`;
 				}
 
+				const details: Details = { error: false, rowCount, fields };
 				return {
 					content: [{ type: "text" as const, text: output }],
-					details: { rowCount, fields },
+					details,
 				};
 			} catch (err: unknown) {
 				const message = err instanceof Error ? err.message : JSON.stringify(err);
+				const details: Details = { error: true };
 				return {
 					content: [{ type: "text" as const, text: `Query error: ${message}` }],
-					details: { error: true },
+					details,
 				};
 			}
 		},
