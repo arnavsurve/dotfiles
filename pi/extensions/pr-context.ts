@@ -6,14 +6,6 @@
 
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 
-interface PrInfo {
-	number: number;
-	title: string;
-	url: string;
-	state: string;
-	reviewDecision: string;
-}
-
 export default function (pi: ExtensionAPI) {
 	let injected = false;
 
@@ -21,9 +13,11 @@ export default function (pi: ExtensionAPI) {
 		if (injected) return;
 
 		try {
-			const result = await pi.exec("gh", [
-				"pr", "view", "--json", "number,title,url,state,reviewDecision",
-			], { timeout: 5000 });
+			const result = await pi.exec(
+				"gh",
+				["pr", "view", "--json", "number,title,url,state,reviewDecision"],
+				{ timeout: 5000 },
+			);
 
 			if (result.code !== 0) return;
 			const data = JSON.parse(result.stdout);
@@ -31,9 +25,7 @@ export default function (pi: ExtensionAPI) {
 
 			injected = true;
 
-			const review = data.reviewDecision
-				? ` | review: ${data.reviewDecision}`
-				: "";
+			const review = data.reviewDecision ? ` | review: ${data.reviewDecision}` : "";
 
 			return {
 				message: {
