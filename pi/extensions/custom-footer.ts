@@ -48,7 +48,14 @@ export default function (pi: ExtensionAPI) {
 						ctxPart = ` ctx: ${fmt(usage.tokens)}/${fmt(usage.contextWindow)} (${pct}%)`;
 					}
 
-					const left = theme.fg("dim", `↑${fmt(input)} ↓${fmt(output)} $${cost.toFixed(3)}${ctxPart}`)
+					const ansi = (r: number, g: number, b: number, text: string) =>
+						`\x1b[38;2;${r};${g};${b}m${text}\x1b[0m`;
+					const dimGreen = (t: string) => ansi(80, 160, 100, t);
+					const dimPurple = (t: string) => ansi(140, 110, 180, t);
+
+					const left = theme.fg("dim", `↑${fmt(input)} ↓${fmt(output)}`)
+						+ " " + dimGreen(`$${cost.toFixed(3)}`)
+						+ (ctxPart ? " " + dimPurple(ctxPart.trim()) : "")
 						+ statusStr
 						+ " "
 						+ theme.fg("muted", cwd);
