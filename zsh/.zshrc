@@ -111,6 +111,7 @@ alias y="yazi"
 alias claude="claude --dangerously-skip-permissions"
 alias codex="codex --dangerously-bypass-approvals-and-sandbox"
 alias pwdc="pwd | pbcopy"
+alias piconfig="cd ~/dotfiles/pi && pi"
 
 # bare clone a repo for worktree-based development
 # usage: gbare <repo-url> [directory]
