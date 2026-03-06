@@ -27,7 +27,11 @@ export default function (pi: ExtensionAPI) {
 						}
 					}
 
-					const fmt = (n: number) => (n < 1000 ? `${n}` : `${(n / 1000).toFixed(1)}k`);
+					const fmt = (n: number) => {
+						if (n < 1000) return `${n}`;
+						if (n < 1_000_000) return `${(n / 1000).toFixed(1)}k`;
+						return `${(n / 1_000_000).toFixed(1)}m`;
+					};
 
 					const branch = footerData.getGitBranch();
 					const model = ctx.model?.id || "no-model";
