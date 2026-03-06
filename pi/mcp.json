@@ -38,6 +38,10 @@
       "lifecycle": "eager",
       "directTools": true
     },
+    "slack": {
+      "command": "/Users/asurve/dotfiles/pi/scripts/slack-mcp.sh",
+      "directTools": true
+    },
     "cloudwatch-stg": {
       "command": "doppler",
       "args": [
