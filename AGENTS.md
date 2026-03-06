@@ -20,12 +20,17 @@ When monitoring long-running processes with `streamsh`, wait 5-10 seconds betwee
 When asked to spin off new work or work in a new worktree:
 - The repo at ~/dev/escher/ is a bare checkout with worktrees as directories inside it
 - Branch names must use a prefix like `feature/`, `fix/`, `chore/`, `hotfix/`, `experiment/`, etc.
-    - Optionally, include a topic like `feature/coworker/branch-name`
+    - When working within a known project or area, include it as a topic: `feature/coworker/branch-name`, `fix/dotfiles/broken-symlink`
+    - Only omit the topic for truly cross-cutting or standalone work
 - The worktree directory name must match the branch name exactly, so directories nest naturally under their prefix
 - Create worktrees with: `git -C ~/dev/escher worktree add <branch-name> -b <branch-name>`
 - Example: `git -C ~/dev/escher worktree add feature/my-thing -b feature/my-thing` → creates `~/dev/escher/feature/my-thing/`
 - Never use a flat/shortened name that differs from the branch (e.g. don't use `my-thing` when the branch is `feature/my-thing`)
 - Then cd into ~/dev/escher/<branch-name>/ to do the work
+
+## Git Commits
+
+Never commit automatically. After making changes, present a summary of what changed and wait for explicit instruction before running `git add` or `git commit`. This applies to all commits — fixes, features, refactors, chores, etc.
 
 ## Code Style
 
