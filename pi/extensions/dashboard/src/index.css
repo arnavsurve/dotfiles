@@ -1,18 +1,35 @@
 @import "tailwindcss";
 
+/* Dark theme (default) */
 @theme {
-	--color-bg: #0c0c0c;
-	--color-bg2: #151515;
-	--color-bg3: #1d1d1d;
-	--color-border: #282828;
-	--color-fg: #e6e6e6;
-	--color-fg2: #888888;
-	--color-fg3: #505050;
-	--color-accent: #8fb8d0;
+	--color-bg: #0a0a0a;
+	--color-bg2: #141414;
+	--color-bg3: #1c1c1c;
+	--color-border: #262626;
+	--color-fg: #e0e0e0;
+	--color-fg2: #808080;
+	--color-fg3: #4a4a4a;
+	--color-accent: #e0e0e0;
 	--color-green: #4aaa6e;
 	--color-yellow: #d4a05a;
 	--color-red: #d04060;
 	--color-teal: #6abab6;
+}
+
+/* Light overrides — applied via .light class on <html> */
+.light {
+	--color-bg: #f2f2f2;
+	--color-bg2: #fafafa;
+	--color-bg3: #e8e8e8;
+	--color-border: #d0d0d0;
+	--color-fg: #111111;
+	--color-fg2: #555555;
+	--color-fg3: #999999;
+	--color-accent: #111111;
+	--color-green: #2d8050;
+	--color-yellow: #a06828;
+	--color-red: #b83048;
+	--color-teal: #2a807c;
 }
 
 body {

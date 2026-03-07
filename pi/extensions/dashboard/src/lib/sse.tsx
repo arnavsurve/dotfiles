@@ -3,22 +3,19 @@
  * distributes updates to all consumers.
  */
 
-import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { SessionState, ToolEvent } from "./types";
-
-interface SSEState {
-	sessions: Map<number, SessionState>;
-	toolFeed: ToolEvent[];
-}
 
 interface SSEContextValue {
 	sessions: SessionState[];
 	toolFeedForPid: (pid: number) => ToolEvent[];
+	toolFeedVersion: number;
 }
 
 const SSEContext = createContext<SSEContextValue>({
 	sessions: [],
 	toolFeedForPid: () => [],
+	toolFeedVersion: 0,
 });
 
 export function useSSE() {
@@ -26,9 +23,10 @@ export function useSSE() {
 }
 
 export function SSEProvider({ children }: { children: React.ReactNode }) {
-	const stateRef = useRef<SSEState>({ sessions: new Map(), toolFeed: [] });
-	const [sessions, setSessions] = useState<SessionState[]>([]);
+	const sessionsRef = useRef(new Map<number, SessionState>());
 	const toolFeeds = useRef(new Map<number, ToolEvent[]>());
+	const [sessions, setSessions] = useState<SessionState[]>([]);
+	const [toolFeedVersion, setToolFeedVersion] = useState(0);
 
 	useEffect(() => {
 		const es = new EventSource("/api/events");
@@ -39,50 +37,52 @@ export function SSEProvider({ children }: { children: React.ReactNode }) {
 
 			switch (event.type) {
 				case "init":
-					stateRef.current.sessions = new Map(
-						(event.sessions as SessionState[]).map((s) => [s.pid, s]),
+					sessionsRef.current = new Map(
+						(event.sessions as SessionState[]).map((s: SessionState) => [s.pid, s]),
 					);
+					setSessions(Array.from(sessionsRef.current.values()));
 					break;
+
 				case "session_update":
-					stateRef.current.sessions.set(event.pid, event.session);
+					sessionsRef.current.set(event.pid, event.session);
+					setSessions(Array.from(sessionsRef.current.values()));
 					break;
+
 				case "session_remove":
-					stateRef.current.sessions.delete(event.pid);
+					sessionsRef.current.delete(event.pid);
 					toolFeeds.current.delete(event.pid);
+					setSessions(Array.from(sessionsRef.current.values()));
 					break;
+
 				case "tool_start":
 				case "tool_end": {
 					const feed = toolFeeds.current.get(event.pid) ?? [];
 					if (event.type === "tool_start") {
 						feed.push(event.event);
 					} else {
-						const idx = feed.findIndex((t) => t.toolCallId === event.event.toolCallId);
+						const idx = feed.findIndex((t: ToolEvent) => t.toolCallId === event.event.toolCallId);
 						if (idx >= 0) feed[idx] = event.event;
 						else feed.push(event.event);
 					}
 					if (feed.length > 100) feed.splice(0, feed.length - 100);
 					toolFeeds.current.set(event.pid, feed);
+					setToolFeedVersion((v) => v + 1);
 					break;
 				}
 			}
-
-			setSessions(Array.from(stateRef.current.sessions.values()));
 		};
 
-		es.onerror = () => {
-			// EventSource auto-reconnects
-		};
+		es.onerror = () => {};
 
 		return () => es.close();
 	}, []);
 
-	const toolFeedForPid = useCallback(
-		(pid: number) => toolFeeds.current.get(pid) ?? [],
-		[],
-	);
+	function toolFeedForPid(pid: number): ToolEvent[] {
+		return toolFeeds.current.get(pid) ?? [];
+	}
 
 	return (
-		<SSEContext.Provider value={{ sessions, toolFeedForPid }}>
+		<SSEContext.Provider value={{ sessions, toolFeedForPid, toolFeedVersion }}>
 			{children}
 		</SSEContext.Provider>
 	);

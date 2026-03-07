@@ -36,6 +36,8 @@ export interface WorktreeOverview {
 	agents: SessionState[];
 	agentCount: number;
 	anyActive: boolean;
+	stale: { state: string; number: number; url: string } | null;
+	pr: { number: number; reviewDecision: string | null; url: string } | null;
 }
 
 export interface OverviewData {

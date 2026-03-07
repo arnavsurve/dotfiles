@@ -1,28 +1,29 @@
 /**
- * Inline SVG chart components. No charting library.
+ * Inline SVG chart components. Brutalist. No frills.
  */
 
 interface SparklineProps {
 	data: number[];
 	width?: number;
 	height?: number;
-	color?: string;
 }
 
-export function Sparkline({ data, width = 200, height = 40, color = "var(--color-fg2)" }: SparklineProps) {
+export function Sparkline({ data, width = 300, height = 80 }: SparklineProps) {
 	if (data.length < 2) return null;
-	const max = Math.max(...data, 1);
+	const max = Math.max(...data, 0.01);
+	const pad = 6;
+	const chartH = height - pad * 2;
 	const points = data
 		.map((v, i) => {
 			const x = (i / (data.length - 1)) * width;
-			const y = height - (v / max) * (height - 4) - 2;
+			const y = pad + chartH - (v / max) * chartH;
 			return `${x},${y}`;
 		})
 		.join(" ");
 
 	return (
-		<svg width={width} height={height} className="block">
-			<polyline points={points} fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
+		<svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="block">
+			<polyline points={points} fill="none" stroke="var(--color-fg)" strokeWidth="1.5" strokeLinejoin="round" />
 		</svg>
 	);
 }
@@ -31,22 +32,21 @@ interface BarChartProps {
 	data: number[];
 	width?: number;
 	height?: number;
-	color?: string;
 }
 
-export function BarChart({ data, width = 200, height = 50, color = "var(--color-fg)" }: BarChartProps) {
+export function BarChart({ data, width = 400, height = 120 }: BarChartProps) {
 	if (data.length === 0) return null;
 	const max = Math.max(...data, 1);
-	const barWidth = Math.max(1, (width - data.length) / data.length);
-	const gap = 1;
+	const gap = 2;
+	const barWidth = Math.max(2, (width - (data.length - 1) * gap) / data.length);
 
 	return (
-		<svg width={width} height={height} className="block">
+		<svg width="100%" height="100%" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="block">
 			{data.map((v, i) => {
-				const barHeight = (v / max) * (height - 2);
+				const barHeight = Math.max(1, (v / max) * (height - 4));
 				const x = i * (barWidth + gap);
 				const y = height - barHeight;
-				return <rect key={i} x={x} y={y} width={barWidth} height={barHeight} fill={color} rx="1" />;
+				return <rect key={i} x={x} y={y} width={barWidth} height={barHeight} fill="var(--color-fg)" />;
 			})}
 		</svg>
 	);
@@ -54,21 +54,20 @@ export function BarChart({ data, width = 200, height = 50, color = "var(--color-
 
 interface HBarProps {
 	items: { label: string; value: number }[];
-	maxWidth?: number;
 }
 
-export function HorizontalBars({ items, maxWidth = 160 }: HBarProps) {
+export function HorizontalBars({ items }: HBarProps) {
 	if (items.length === 0) return null;
 	const max = Math.max(...items.map((i) => i.value), 1);
 
 	return (
-		<div className="space-y-1.5">
+		<div className="space-y-2">
 			{items.map((item) => (
-				<div key={item.label} className="flex items-center gap-2 text-[11px]">
+				<div key={item.label} className="flex items-center gap-3 text-[12px]">
 					<span className="text-fg2 w-12 shrink-0 text-right">{item.label}</span>
 					<div className="flex-1 h-3 bg-bg rounded overflow-hidden">
 						<div
-							className="h-full bg-fg3 rounded"
+							className="h-full bg-fg3 rounded-none"
 							style={{ width: `${(item.value / max) * 100}%` }}
 						/>
 					</div>

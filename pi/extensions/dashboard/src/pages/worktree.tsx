@@ -8,7 +8,7 @@ import { fmtCost, fmtTime, fmtTokens, shortModel, statusLabel, timeAgo } from "@
 export function WorktreeDetail() {
 	const location = useLocation();
 	const wtPath = decodeURIComponent(location.pathname.replace("/worktree/", ""));
-	const { sessions, toolFeedForPid } = useSSE();
+	const { sessions, toolFeedForPid, toolFeedVersion } = useSSE();
 	const [data, setData] = useState<WorktreeDetailData | null>(null);
 	const [selectedPid, setSelectedPid] = useState<number | null>(null);
 
@@ -46,6 +46,11 @@ export function WorktreeDetail() {
 		return () => clearInterval(i);
 	}, [wtPath]);
 
+	// reset selected agent when worktree changes
+	useEffect(() => {
+		setSelectedPid(null);
+	}, [wtPath]);
+
 	// auto-select first agent if none selected
 	useEffect(() => {
 		if (!selectedPid && liveAgents.length > 0) {
@@ -53,7 +58,9 @@ export function WorktreeDetail() {
 		}
 	}, [liveAgents, selectedPid]);
 
+	// toolFeedVersion forces re-read from the ref when tool events arrive
 	const selectedFeed = selectedPid ? toolFeedForPid(selectedPid) : [];
+	void toolFeedVersion;
 
 	return (
 		<div className="flex h-screen min-h-screen">
