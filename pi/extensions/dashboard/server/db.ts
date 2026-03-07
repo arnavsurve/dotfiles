@@ -211,6 +211,13 @@ export function getTimeseries(sinceMs: number): TimeseriesBucket[] {
 	return stmts.getTimeseries.all(sinceMs) as TimeseriesBucket[];
 }
 
+export function getAggregatedCost(sinceMs: number): { cost: number; tokensIn: number; tokensOut: number } {
+	const row = db.prepare(
+		`SELECT COALESCE(SUM(cost),0) as cost, COALESCE(SUM(tokens_in),0) as tokens_in, COALESCE(SUM(tokens_out),0) as tokens_out FROM timeseries WHERE bucket_start > ?`
+	).get(sinceMs) as { cost: number; tokens_in: number; tokens_out: number };
+	return { cost: row.cost, tokensIn: row.tokens_in, tokensOut: row.tokens_out };
+}
+
 export function getToolBreakdown(sinceMs: number): ToolBreakdown[] {
 	return stmts.getToolBreakdown.all(sinceMs) as ToolBreakdown[];
 }

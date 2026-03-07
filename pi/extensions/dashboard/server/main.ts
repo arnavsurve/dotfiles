@@ -4,9 +4,9 @@ import { cors } from "hono/cors";
 import { streamSSE } from "hono/streaming";
 import * as path from "node:path";
 
-import { getTimeseries, getToolBreakdown, getRecentSessions, getToolEventsForPid } from "./db.js";
+import { getTimeseries, getToolBreakdown, getRecentSessions, getToolEventsForPid, getAggregatedCost } from "./db.js";
 import { getWorktreeDetail } from "./git.js";
-import { getMyPRs, getRepoFullName } from "./github.js";
+import { getMyPRs, getRepoFullName, getBranchPRStatus } from "./github.js";
 import { discoverRepos, sessionWorktree } from "./repos.js";
 import { store, type SSEEvent } from "./store.js";
 
@@ -102,27 +102,56 @@ app.get("/api/overview", async (c) => {
 		else activeCount++;
 	}
 
+	// fetch all open PRs for cross-referencing
+	const seenRepos = new Set<string>();
+	const allOpenPRs: Awaited<ReturnType<typeof getMyPRs>> = [];
+	for (const repo of repos) {
+		const fullName = await getRepoFullName(repo.root);
+		if (fullName && !seenRepos.has(fullName)) {
+			seenRepos.add(fullName);
+			const prs = await getMyPRs(fullName);
+			allOpenPRs.push(...prs);
+		}
+	}
+
 	// build worktree list with matched sessions, dedup by path
 	const seenPaths = new Set<string>();
+	const SKIP_BRANCHES = new Set(["main", "master", "release", "staging", "develop"]);
 	const worktrees = [];
 	for (const repo of repos) {
+		const repoFullName = await getRepoFullName(repo.root);
 		for (const wt of repo.worktrees) {
 			if (seenPaths.has(wt.path)) continue;
 			seenPaths.add(wt.path);
 			const agents = sessions.filter((s) => s.cwd.startsWith(wt.path));
+
+			// match open PR by branch name
+			const openPR = wt.branch ? allOpenPRs.find((p) => p.branch === wt.branch) ?? null : null;
+
+			let stale: { state: string; number: number; url: string } | null = null;
+			if (!openPR && repoFullName && wt.branch && !SKIP_BRANCHES.has(wt.branch)) {
+				const prStatus = await getBranchPRStatus(repoFullName, wt.branch);
+				if (prStatus && (prStatus.merged || prStatus.state === "CLOSED")) {
+					stale = { state: prStatus.state, number: prStatus.number, url: prStatus.url };
+				}
+			}
+
 			worktrees.push({
 				...wt,
 				repoRoot: repo.root,
 				agents,
 				agentCount: agents.length,
 				anyActive: agents.some((a) => a.status !== "idle"),
+				stale,
+				pr: openPR ? { number: openPR.number, reviewDecision: openPR.reviewDecision, url: openPR.url } : null,
 			});
 		}
 	}
 
-	// sort: active agents first, then dirty (we don't know dirty yet at overview level — that's fetched per-worktree)
+	// sort: active agents first, stale last, then alphabetical
 	worktrees.sort((a, b) => {
 		if (a.agentCount !== b.agentCount) return b.agentCount - a.agentCount;
+		if (!!a.stale !== !!b.stale) return a.stale ? 1 : -1;
 		return (a.branch ?? "").localeCompare(b.branch ?? "");
 	});
 
@@ -176,6 +205,31 @@ app.get("/api/prs", async (c) => {
 	return c.json(allPrs);
 });
 
+app.get("/api/cost", (c) => {
+	const range = c.req.query("range") ?? "today";
+	const now = Date.now();
+	let since: number;
+	switch (range) {
+		case "today": {
+			const d = new Date(); d.setHours(0, 0, 0, 0);
+			since = d.getTime();
+			break;
+		}
+		case "wtd": {
+			const d = new Date(); d.setDate(d.getDate() - d.getDay()); d.setHours(0, 0, 0, 0);
+			since = d.getTime();
+			break;
+		}
+		case "mtd": {
+			const d = new Date(); d.setDate(1); d.setHours(0, 0, 0, 0);
+			since = d.getTime();
+			break;
+		}
+		default: since = 0;
+	}
+	return c.json(getAggregatedCost(since));
+});
+
 app.get("/api/timeseries", (c) => {
 	const hours = parseInt(c.req.query("hours") ?? "24", 10);
 	const since = Date.now() - hours * 60 * 60 * 1000;
@@ -204,8 +258,33 @@ app.post("/api/worktree/remove", async (c) => {
 	try {
 		const { exec: execCb } = await import("node:child_process");
 		const { promisify } = await import("node:util");
-		const execAsync = promisify(execCb);
-		await execAsync(`git worktree remove "${wtPath}" --force`, { timeout: 10_000 });
+		const fs = await import("node:fs");
+		const pathMod = await import("node:path");
+		const run = promisify(execCb);
+
+		// find the bare repo dir
+		let bareDir: string;
+		if (fs.existsSync(wtPath)) {
+			const { stdout } = await run(`git -C "${wtPath}" rev-parse --git-common-dir`, { timeout: 5_000 });
+			bareDir = stdout.trim();
+		} else {
+			let dir = wtPath;
+			while (dir !== "/") {
+				dir = pathMod.dirname(dir);
+				const candidate = pathMod.join(dir, ".bare");
+				if (fs.existsSync(candidate)) { bareDir = candidate; break; }
+			}
+			bareDir ??= wtPath;
+		}
+
+		// prune stale worktrees
+		await run(`git -C "${bareDir}" worktree prune`, { timeout: 5_000 }).catch(() => {});
+
+		// remove if directory still exists on disk
+		if (fs.existsSync(wtPath)) {
+			await run(`git -C "${bareDir}" worktree remove "${wtPath}" --force`, { timeout: 60_000 });
+		}
+
 		return c.json({ ok: true });
 	} catch (err: unknown) {
 		const msg = err instanceof Error ? err.message : String(err);

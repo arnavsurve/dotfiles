@@ -65,7 +65,7 @@ function computeStats(ctx: ExtensionContext): { input: number; output: number; c
 	let input = 0;
 	let output = 0;
 	let cost = 0;
-	for (const e of ctx.sessionManager.getBranch()) {
+	for (const e of ctx.sessionManager.getEntries()) {
 		if (e.type === "message" && e.message.role === "assistant") {
 			const m = e.message as AssistantMessage;
 			input += m.usage.input;
@@ -104,22 +104,24 @@ function summarizeArgs(input: Record<string, unknown>): string {
 	return keys.slice(0, 3).join(", ");
 }
 
-async function detectWorktree(cwd: string): Promise<string> {
+async function detectWorktree(input: string): Promise<string> {
+	const os = await import("node:os");
+	const expanded = input.replace(/^~/, os.homedir());
 	try {
-		const { stdout } = await execAsync("git rev-parse --show-toplevel", { cwd });
+		const { stdout } = await execAsync("git rev-parse --show-toplevel", { cwd: expanded });
 		return stdout.trim();
 	} catch {
-		return cwd;
+		return expanded;
 	}
 }
 
 // track tool start times for duration calculation
 const toolStartTimes = new Map<string, number>();
+let cwdOverride: string | null = null;
 
 export default function (pi: ExtensionAPI) {
 	let heartbeatTimer: ReturnType<typeof setInterval> | null = null;
 	let lastCtx: ExtensionContext | null = null;
-	let cwdOverride: string | null = null;
 
 	pi.on("session_start", async (_event, ctx) => {
 		lastCtx = ctx;
