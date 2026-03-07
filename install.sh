@@ -105,7 +105,8 @@ install_deps_brew() {
         python3 \
         go \
         fnm \
-        tree-sitter-cli
+        tree-sitter-cli \
+        terminal-notifier
 
     if ! command -v node &>/dev/null; then
         echo "==> Installing Node.js LTS via fnm..."
@@ -226,3 +227,40 @@ for ext in "$DOTFILES_DIR/pi/extensions"/*; do
     [[ "$name" == "package-lock.json" ]] && continue
     link_file "$ext" "$HOME/.pi/agent/extensions/$name"
 done
+
+# ---------------------------------------------------------------------------
+# 4. Pi Dashboard daemon (macOS only)
+# ---------------------------------------------------------------------------
+
+if [ "$(uname -s)" = "Darwin" ]; then
+    DASHBOARD_EXT="$DOTFILES_DIR/pi/extensions/dashboard"
+    PLIST_SRC="$DASHBOARD_EXT/com.pi.dashboard.plist"
+    PLIST_DST="$HOME/Library/LaunchAgents/com.pi.dashboard.plist"
+
+    # install dashboard npm deps if needed
+    if [ -f "$DASHBOARD_EXT/package.json" ] && [ ! -d "$DASHBOARD_EXT/node_modules" ]; then
+        echo "==> Installing pi dashboard dependencies..."
+        (cd "$DASHBOARD_EXT" && npm install --silent)
+    fi
+
+    # build frontend
+    if [ -f "$DASHBOARD_EXT/vite.config.ts" ]; then
+        echo "==> Building pi dashboard frontend..."
+        (cd "$DASHBOARD_EXT" && npx vite build --logLevel error)
+    fi
+
+    # create dashboard config if it doesn't exist
+    mkdir -p "$HOME/.pi/dashboard"
+    if [ ! -f "$HOME/.pi/dashboard/config.json" ]; then
+        echo '{"repos":[]}' > "$HOME/.pi/dashboard/config.json"
+        echo "ok: created ~/.pi/dashboard/config.json (add repo paths to monitor)"
+    fi
+
+    # install and load launchd daemon
+    if [ -f "$PLIST_SRC" ]; then
+        link_file "$PLIST_SRC" "$PLIST_DST"
+        launchctl unload "$PLIST_DST" 2>/dev/null || true
+        launchctl load "$PLIST_DST"
+        echo "ok: pi dashboard daemon loaded (http://127.0.0.1:7778)"
+    fi
+fi
