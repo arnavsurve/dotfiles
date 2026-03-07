@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.pi.dashboard</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/sh</string>
+		<string>-c</string>
+		<string>eval "$(/opt/homebrew/bin/fnm env)" &amp;&amp; /opt/homebrew/bin/fnm use default --silent-if-unchanged &amp;&amp; npx tsx "$HOME/.pi/agent/extensions/dashboard/server/main.ts"</string>
+	</array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>DASHBOARD_PORT</key>
+		<string>7778</string>
+		<key>PATH</key>
+		<string>/Users/asurve/.local/share/fnm:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+		<key>HOME</key>
+		<string>/Users/asurve</string>
+	</dict>
+	<key>WorkingDirectory</key>
+	<string>/Users/asurve/dotfiles/pi/extensions/dashboard</string>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>KeepAlive</key>
+	<true/>
+	<key>StandardOutPath</key>
+	<string>/tmp/pi-dashboard.log</string>
+	<key>StandardErrorPath</key>
+	<string>/tmp/pi-dashboard.log</string>
+</dict>
+</plist>

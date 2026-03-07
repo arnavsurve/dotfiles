@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+	--color-bg: #0c0c0c;
+	--color-bg2: #151515;
+	--color-bg3: #1d1d1d;
+	--color-border: #282828;
+	--color-fg: #e6e6e6;
+	--color-fg2: #888888;
+	--color-fg3: #505050;
+	--color-accent: #8fb8d0;
+	--color-green: #4aaa6e;
+	--color-yellow: #d4a05a;
+	--color-red: #d04060;
+	--color-teal: #6abab6;
+}
+
+body {
+	font-family: "Berkeley Mono", "SF Mono", "JetBrains Mono", "Fira Code", monospace;
+	background: var(--color-bg);
+	color: var(--color-fg);
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+@keyframes pulse-dot {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.4; }
+}
+.animate-pulse-dot { animation: pulse-dot 1.5s ease-in-out infinite; }
