@@ -101,7 +101,7 @@ export function WorktreeDetail() {
 						href={data.pr.url}
 						target="_blank"
 						rel="noopener"
-						className="flex items-center gap-3 px-3 py-2 rounded bg-bg2 border border-border text-xs hover:border-[#333] transition-colors"
+						className="flex items-center gap-3 px-3 py-2 bg-bg2 border border-border text-xs hover:border-[#333] transition-colors"
 					>
 						<span className="text-fg3">#{data.pr.number}</span>
 						<span className="text-fg truncate flex-1">{data.pr.title}</span>
@@ -121,7 +121,7 @@ export function WorktreeDetail() {
 								<button
 									key={a.pid}
 									onClick={() => setSelectedPid(a.pid)}
-									className={`w-full text-left rounded-md p-3 transition-colors ${
+									className={`w-full text-left p-3 transition-colors ${
 										selectedPid === a.pid
 											? "bg-bg3 border border-accent"
 											: "bg-bg2 border border-border hover:border-[#333]"

@@ -65,9 +65,9 @@ export function HorizontalBars({ items }: HBarProps) {
 			{items.map((item) => (
 				<div key={item.label} className="flex items-center gap-3 text-[12px]">
 					<span className="text-fg2 w-12 shrink-0 text-right">{item.label}</span>
-					<div className="flex-1 h-3 bg-bg rounded overflow-hidden">
+					<div className="flex-1 h-3 bg-bg overflow-hidden">
 						<div
-							className="h-full bg-fg3 rounded-none"
+							className="h-full bg-fg3"
 							style={{ width: `${(item.value / max) * 100}%` }}
 						/>
 					</div>
