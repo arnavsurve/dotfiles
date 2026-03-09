@@ -14,10 +14,11 @@ const execAsync = promisify(exec);
 async function isDarkMode(): Promise<boolean> {
 	try {
 		const { stdout } = await execAsync(
-			"osascript -e 'tell application \"System Events\" to tell appearance preferences to return dark mode'",
+			"defaults read -g AppleInterfaceStyle",
 		);
-		return stdout.trim() === "true";
+		return stdout.trim() === "Dark";
 	} catch {
+		// AppleInterfaceStyle key is absent when in light mode
 		return false;
 	}
 }
