@@ -52,6 +52,23 @@ export default function (pi: ExtensionAPI) {
 		} catch {
 			// no PR or gh not available
 		}
+
+		pi.registerCommand("pr", {
+			description: "Open the current branch's PR in GitHub",
+			handler: async (_args, ctx) => {
+				try {
+					const data = await fetchPr();
+					if (!data || data.state !== "OPEN") {
+						ctx.ui.notify("No open PR found for this branch", "warn");
+						return;
+					}
+					await pi.exec("open", [data.url]);
+					ctx.ui.notify(`Opened PR #${data.number}`, "info");
+				} catch {
+					ctx.ui.notify("Failed to fetch PR info", "error");
+				}
+			},
+		});
 	});
 
 	pi.on("before_agent_start", async (_event, ctx) => {
