@@ -5,9 +5,7 @@
   "defaultModel": "claude-opus-4-6",
   "defaultThinkingLevel": "medium",
   "editorPaddingX": 0,
-  "packages": [
-    "npm:pi-mcp-adapter",
-    "npm:pi-web-search"
-  ],
+  "packages": ["npm:pi-mcp-adapter", "npm:pi-web-search"],
   "theme": "cursor-dark"
 }
+
