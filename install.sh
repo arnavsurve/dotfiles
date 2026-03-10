@@ -168,7 +168,7 @@ declare -A LINKS=(
     ["$DOTFILES_DIR/nvim"]="$HOME/.config/nvim"
     ["$DOTFILES_DIR/ghostty"]="$HOME/.config/ghostty"
     ["$DOTFILES_DIR/lazygit/config.yml"]="$HOME/.config/lazygit/config.yml"
-    ["$DOTFILES_DIR/iterm2/com.googlecode.iterm2.plist"]="$HOME/Library/Preferences/com.googlecode.iterm2.plist"
+
     ["$DOTFILES_DIR/claude/settings.json"]="$HOME/.claude/settings.json"
     ["$DOTFILES_DIR/claude/settings.local.json"]="$HOME/.claude/settings.local.json"
     ["$DOTFILES_DIR/pi/AGENTS.md"]="$HOME/.pi/agent/AGENTS.md"
@@ -229,7 +229,24 @@ for ext in "$DOTFILES_DIR/pi/extensions"/*; do
 done
 
 # ---------------------------------------------------------------------------
-# 4. Pi Dashboard daemon (macOS only)
+# 4. iTerm2 preferences (macOS only)
+# ---------------------------------------------------------------------------
+
+if [ "$(uname -s)" = "Darwin" ] && [ -d "$DOTFILES_DIR/iterm2" ]; then
+    # Remove stale symlink if present (old approach)
+    if [ -L "$HOME/Library/Preferences/com.googlecode.iterm2.plist" ]; then
+        rm "$HOME/Library/Preferences/com.googlecode.iterm2.plist"
+        echo "removed stale iterm2 plist symlink"
+    fi
+
+    # Tell iTerm to load/save preferences from the dotfiles folder natively
+    defaults write com.googlecode.iterm2 PrefsCustomFolder -string "$DOTFILES_DIR/iterm2"
+    defaults write com.googlecode.iterm2 LoadPrefsFromCustomFolder -bool true
+    echo "ok: iTerm2 configured to load preferences from $DOTFILES_DIR/iterm2"
+fi
+
+# ---------------------------------------------------------------------------
+# 5. Pi Dashboard daemon (macOS only)
 # ---------------------------------------------------------------------------
 
 if [ "$(uname -s)" = "Darwin" ]; then
