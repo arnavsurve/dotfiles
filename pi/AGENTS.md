@@ -24,3 +24,7 @@ Extensions live in `~/dotfiles/pi/extensions/` and are symlinked into `~/.pi/age
 - After adding one, symlink it: `ln -s /Users/asurve/dotfiles/pi/extensions/<name> ~/.pi/agent/extensions/<name>`
 - If you add a new dependency, run `npm install` in `~/dotfiles/pi/extensions/`
 - The `package.json` and `node_modules` are also symlinked into `~/.pi/agent/extensions/`
+
+## Clipboard
+
+When generating text intended for use outside this session — prompts for other agents, commands to paste elsewhere, etc. — pipe it directly to the clipboard via `echo "..." | pbcopy` instead of printing it. Newlines in pasted text get interpreted as Enter in pi, so single-line output is preferred when possible.
