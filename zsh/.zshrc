@@ -135,6 +135,10 @@ alias emain="cd ~/dev/escher/main && git pull"
 alias eox="yarn run lint && yarn run format"
 alias eroot="cd ~/dev/escher"
 
+# doppelganger
+alias dmain="cd ~/dev/doppelganger/main && git pull"
+alias droot="cd ~/dev/doppelganger"
+
 unalias gd 2>/dev/null
 
 # worktrees
