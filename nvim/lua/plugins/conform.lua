@@ -1,11 +1,40 @@
---- Pick oxfmt when the project has .oxfmtrc.json, otherwise biome.
+local prettier_markers = {
+	".prettierrc",
+	".prettierrc.json",
+	".prettierrc.yml",
+	".prettierrc.yaml",
+	".prettierrc.js",
+	".prettierrc.cjs",
+	".prettierrc.mjs",
+	".prettierrc.toml",
+	"prettier.config.js",
+	"prettier.config.cjs",
+	"prettier.config.mjs",
+	"prettier.config.ts",
+}
+
+local function find_marker(dir, markers)
+	for _, m in ipairs(markers) do
+		if vim.fs.find(m, { upward = true, path = dir })[1] then
+			return true
+		end
+	end
+	return false
+end
+
 local function web_formatter(bufnr)
 	local bufname = vim.api.nvim_buf_get_name(bufnr)
 	local dir = vim.fs.dirname(bufname)
 	if vim.fs.find(".oxfmtrc.json", { upward = true, path = dir })[1] then
 		return { "oxfmt" }
 	end
-	return { "biome" }
+	if vim.fs.find("biome.json", { upward = true, path = dir })[1] or vim.fs.find("biome.jsonc", { upward = true, path = dir })[1] then
+		return { "biome" }
+	end
+	if find_marker(dir, prettier_markers) then
+		return { "prettierd" }
+	end
+	return { lsp_format = "fallback" }
 end
 
 return {

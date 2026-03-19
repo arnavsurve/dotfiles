@@ -37,6 +37,7 @@ return {
 				"yamlls",
 				"rust_analyzer",
 				"vtsls",
+				"eslint",
 			},
 			automatic_installation = true,
 			automatic_enable = false,
@@ -179,6 +180,26 @@ return {
 		})
 		vim.lsp.enable("oxlint")
 
+		-- eslint: linter for JS/TS via eslint-lsp
+		-- Activates only in projects with an eslint config
+		vim.lsp.config("eslint", {
+			capabilities = capabilities,
+			root_markers = {
+				"eslint.config.js",
+				"eslint.config.mjs",
+				"eslint.config.cjs",
+				"eslint.config.ts",
+				"eslint.config.mts",
+				"eslint.config.cts",
+				".eslintrc.json",
+				".eslintrc.js",
+				".eslintrc.yml",
+				".eslintrc.yaml",
+				".eslintrc",
+			},
+		})
+		vim.lsp.enable("eslint")
+
 		-- tsgo: native Go-based TypeScript server (not managed by Mason)
 		-- Install: npm install --global @typescript/native-preview
 		-- NOTE: experimental — go-to-definition doesn't work for some package types
@@ -221,6 +242,7 @@ return {
 				"java-test",
 				"cpptools",
 				"codelldb",
+				"prettierd",
 			},
 		})
 	end,
