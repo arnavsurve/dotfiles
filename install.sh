@@ -167,7 +167,7 @@ declare -A LINKS=(
     ["$DOTFILES_DIR/git/.gitconfig"]="$HOME/.gitconfig"
     ["$DOTFILES_DIR/nvim"]="$HOME/.config/nvim"
     ["$DOTFILES_DIR/ghostty"]="$HOME/.config/ghostty"
-    ["$DOTFILES_DIR/lazygit/config.yml"]="$HOME/.config/lazygit/config.yml"
+    ["$DOTFILES_DIR/lazygit/config.yml"]="$HOME/Library/Application Support/lazygit/config.yml"
 
     ["$DOTFILES_DIR/claude/settings.json"]="$HOME/.claude/settings.json"
     ["$DOTFILES_DIR/claude/settings.local.json"]="$HOME/.claude/settings.local.json"
@@ -186,7 +186,7 @@ AGENTS_TARGETS=(
     "$HOME/.claude/CLAUDE.md"
 )
 
-mkdir -p "$HOME/.config" "$HOME/.claude" "$HOME/.config/lazygit" "$HOME/.pi/agent/extensions"
+mkdir -p "$HOME/.config" "$HOME/.claude" "$HOME/Library/Application Support/lazygit" "$HOME/.pi/agent/extensions"
 
 link_file() {
     local src="$1" target="$2"
