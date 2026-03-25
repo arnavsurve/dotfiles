@@ -105,7 +105,7 @@ export default function (pi: ExtensionAPI) {
 }
 
 async function generateSuggestion(
-	ctx: { sessionManager: any; modelRegistry: any; model: any },
+	ctx: { sessionManager: any; modelRegistry: any; model: any; getSystemPrompt: () => string },
 	signal: AbortSignal,
 ): Promise<string | null> {
 	const branch = ctx.sessionManager.getBranch();
@@ -118,22 +118,25 @@ async function generateSuggestion(
 	const model = ctx.model;
 	if (!model) return null;
 
+	const sessionSystemPrompt = ctx.getSystemPrompt();
+	const combinedSystemPrompt = sessionSystemPrompt + "\n\n" + SUGGEST_SYSTEM_PROMPT;
+
 	const provider: string = model.provider;
 	const modelId: string = model.id;
 
 	if (provider === "anthropic" || model.api === "anthropic-messages") {
-		return callAnthropic({ apiKey, modelId, messages: recentMessages, baseUrl: model.baseUrl, signal });
+		return callAnthropic({ apiKey, modelId, messages: recentMessages, systemPrompt: combinedSystemPrompt, baseUrl: model.baseUrl, signal });
 	}
 	if (provider === "openai" || model.api === "openai-responses" || model.api === "openai-completions") {
-		return callOpenAI({ apiKey, messages: recentMessages, baseUrl: model.baseUrl, signal });
+		return callOpenAI({ apiKey, modelId, messages: recentMessages, systemPrompt: combinedSystemPrompt, baseUrl: model.baseUrl, signal });
 	}
 	if (provider === "google" || model.api === "google-generative-ai") {
-		return callGoogle({ apiKey, modelId, messages: recentMessages, signal });
+		return callGoogle({ apiKey, modelId, messages: recentMessages, systemPrompt: combinedSystemPrompt, signal });
 	}
 
-	const anthropicKey = process.env.ANTHROPIC_API_KEY;
+	const anthropicKey = process.env["ANTHROPIC_API_KEY"];
 	if (anthropicKey) {
-		return callAnthropic({ apiKey: anthropicKey, modelId: "claude-haiku-4-5-20251001", messages: recentMessages, baseUrl: undefined, signal });
+		return callAnthropic({ apiKey: anthropicKey, modelId: modelId || "claude-haiku-4-5-20251001", messages: recentMessages, systemPrompt: combinedSystemPrompt, baseUrl: undefined, signal });
 	}
 
 	return null;
@@ -208,21 +211,11 @@ function truncateMessage(text: string, maxChars: number): string {
 	return text.slice(0, maxChars) + "…";
 }
 
-const SUGGEST_SYSTEM_PROMPT = `You are a suggestion engine for a coding assistant chat. Based on the conversation, predict what the user would OBVIOUSLY say next — but ONLY if it's highly predictable.
+const SUGGEST_SYSTEM_PROMPT = `FIRST: Look at the user's recent messages and original request. Your job is to predict what THEY would type – not what you think they should do.
 
-Rules:
-- Output ONLY the suggested message text, nothing else
-- If there is no clearly obvious next message, output exactly: NONE
-- Output NONE most of the time. Only suggest when the next message is near-certain:
-  - The assistant asked a direct yes/no or choice question and the answer is obvious
-  - The user was clearly in the middle of a multi-step workflow and the next step is unambiguous
-  - The assistant asked for confirmation to proceed with something
-- Do NOT suggest when:
-  - The assistant just finished a task (the user could do anything next)
-  - The conversation is open-ended
-  - You're guessing at what might be useful rather than what's predictable
-  - The suggestion would be generic like "looks good", "thanks", "continue", etc.
-- Keep suggestions concise (1 sentence max)`;
+2-12 words. User's phrasing. Never evaluate, never Claude-voice.
+
+If there's no clear next message the user would type, output exactly: NONE`;
 
 function parseSuggestion(raw: string | undefined | null): string | null {
 	const text = raw?.trim();
@@ -235,10 +228,10 @@ async function callAnthropic(opts: {
 	apiKey: string;
 	modelId: string;
 	messages: SimpleMessage[];
+	systemPrompt: string;
 	baseUrl: string | undefined;
 	signal: AbortSignal;
 }): Promise<string | null> {
-	const suggestModel = opts.modelId.includes("haiku") ? opts.modelId : "claude-haiku-4-5-20251001";
 	const url = `${opts.baseUrl || "https://api.anthropic.com"}/v1/messages`;
 
 	const response = await fetch(url, {
@@ -249,13 +242,10 @@ async function callAnthropic(opts: {
 			"anthropic-version": "2023-06-01",
 		},
 		body: JSON.stringify({
-			model: suggestModel,
-			max_tokens: 150,
-			system: SUGGEST_SYSTEM_PROMPT,
-			messages: [
-				...opts.messages.map((m) => ({ role: m.role, content: m.content })),
-				{ role: "user", content: "What would I obviously say next? Reply with ONLY that message, or NONE if it's not predictable." },
-			],
+			model: opts.modelId,
+			max_tokens: 60,
+			system: opts.systemPrompt,
+			messages: opts.messages.map((m) => ({ role: m.role, content: m.content })),
 		}),
 		signal: opts.signal,
 	});
@@ -267,7 +257,9 @@ async function callAnthropic(opts: {
 
 async function callOpenAI(opts: {
 	apiKey: string;
+	modelId: string;
 	messages: SimpleMessage[];
+	systemPrompt: string;
 	baseUrl: string | undefined;
 	signal: AbortSignal;
 }): Promise<string | null> {
@@ -280,9 +272,9 @@ async function callOpenAI(opts: {
 			Authorization: `Bearer ${opts.apiKey}`,
 		},
 		body: JSON.stringify({
-			model: "gpt-4o-mini",
-			max_tokens: 150,
-			messages: [{ role: "system", content: SUGGEST_SYSTEM_PROMPT }, ...opts.messages],
+			model: opts.modelId,
+			max_tokens: 60,
+			messages: [{ role: "system", content: opts.systemPrompt }, ...opts.messages],
 		}),
 		signal: opts.signal,
 	});
@@ -296,10 +288,10 @@ async function callGoogle(opts: {
 	apiKey: string;
 	modelId: string;
 	messages: SimpleMessage[];
+	systemPrompt: string;
 	signal: AbortSignal;
 }): Promise<string | null> {
-	const model = opts.modelId.includes("flash") ? opts.modelId : "gemini-2.0-flash";
-	const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(opts.apiKey)}`;
+	const url = `https://generativelanguage.googleapis.com/v1beta/models/${opts.modelId}:generateContent?key=${encodeURIComponent(opts.apiKey)}`;
 
 	const contents = opts.messages.map((m) => ({
 		role: m.role === "assistant" ? "model" : "user",
@@ -310,9 +302,9 @@ async function callGoogle(opts: {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({
-			systemInstruction: { parts: [{ text: SUGGEST_SYSTEM_PROMPT }] },
+			systemInstruction: { parts: [{ text: opts.systemPrompt }] },
 			contents,
-			generationConfig: { maxOutputTokens: 150 },
+			generationConfig: { maxOutputTokens: 60 },
 		}),
 		signal: opts.signal,
 	});
