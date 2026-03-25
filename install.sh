@@ -156,6 +156,12 @@ if [ -d "$DOTFILES_DIR/zsh/custom/themes" ]; then
     echo "ok: custom themes linked"
 fi
 
+# Install custom zsh plugins/functions
+for zshfile in "$DOTFILES_DIR/zsh/custom"/*.zsh; do
+    [ -f "$zshfile" ] && ln -sf "$zshfile" "$HOME/.oh-my-zsh/custom/$(basename "$zshfile")"
+done
+echo "ok: custom zsh files linked"
+
 # ---------------------------------------------------------------------------
 # 3. Symlink dotfiles
 # ---------------------------------------------------------------------------
