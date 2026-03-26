@@ -173,6 +173,7 @@ declare -A LINKS=(
     ["$DOTFILES_DIR/git/.gitconfig"]="$HOME/.gitconfig"
     ["$DOTFILES_DIR/nvim"]="$HOME/.config/nvim"
     ["$DOTFILES_DIR/ghostty"]="$HOME/.config/ghostty"
+    ["$DOTFILES_DIR/git/attributes"]="$HOME/.config/git/attributes"
     ["$DOTFILES_DIR/lazygit/config.yml"]="$HOME/Library/Application Support/lazygit/config.yml"
 
     ["$DOTFILES_DIR/claude/settings.json"]="$HOME/.claude/settings.json"
