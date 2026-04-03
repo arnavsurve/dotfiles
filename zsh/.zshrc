@@ -105,6 +105,7 @@ export EDITOR='nvim'
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
+alias c="clear"
 alias vi="nvim"
 alias lg="lazygit"
 alias y="yazi"
@@ -235,3 +236,5 @@ sync_split_diffs_theme() {
   fi
 }
 sync_split_diffs_theme
+
+export CLAUDE_CODE_NO_FLICKER=1
