@@ -4,5 +4,6 @@
   "enabledPlugins": {
     "linear-cli@linear-cli": true
   },
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "includeCoAuthoredBy": false
 }
