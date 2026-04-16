@@ -11,19 +11,16 @@ declare -A LINKS=(
     ["$DOTFILES_DIR/ghostty"]="$HOME/.config/ghostty"
     ["$DOTFILES_DIR/claude/settings.json"]="$HOME/.claude/settings.json"
     ["$DOTFILES_DIR/claude/settings.local.json"]="$HOME/.claude/settings.local.json"
-    ["$DOTFILES_DIR/claude/skills"]="$HOME/.claude/skills"
     ["$DOTFILES_DIR/lazygit/config.yml"]="$HOME/.config/lazygit/config.yml"
 )
 
-for src in "${!LINKS[@]}"; do
-    target="${LINKS[$src]}"
+remove_link() {
+    local src="$1" target="$2"
 
-    # Only remove if it's a symlink pointing into this dotfiles repo
     if [ -L "$target" ] && [ "$(readlink "$target")" = "$src" ]; then
         rm "$target"
         echo "removed symlink: $target"
 
-        # Restore backup if it exists
         if [ -e "${target}.bak" ]; then
             mv "${target}.bak" "$target"
             echo "restored: ${target}.bak -> $target"
@@ -31,4 +28,15 @@ for src in "${!LINKS[@]}"; do
     else
         echo "skipped: $target (not a symlink to this repo)"
     fi
+}
+
+for src in "${!LINKS[@]}"; do
+    target="${LINKS[$src]}"
+    remove_link "$src" "$target"
+done
+
+for skill in "$DOTFILES_DIR/agents/skills"/*/; do
+    [ -d "$skill" ] || continue
+    remove_link "$skill" "$HOME/.agents/skills/$(basename "$skill")"
+    remove_link "$skill" "$HOME/.claude/skills/$(basename "$skill")"
 done

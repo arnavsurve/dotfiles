@@ -193,7 +193,13 @@ AGENTS_TARGETS=(
     "$HOME/.claude/CLAUDE.md"
 )
 
-mkdir -p "$HOME/.config" "$HOME/.claude" "$HOME/Library/Application Support/lazygit" "$HOME/.pi/agent/extensions"
+mkdir -p \
+    "$HOME/.config" \
+    "$HOME/.agents/skills" \
+    "$HOME/.claude" \
+    "$HOME/.claude/skills" \
+    "$HOME/Library/Application Support/lazygit" \
+    "$HOME/.pi/agent/extensions"
 
 link_file() {
     local src="$1" target="$2"
@@ -221,10 +227,11 @@ for target in "${AGENTS_TARGETS[@]}"; do
     link_file "$DOTFILES_DIR/AGENTS.md" "$target"
 done
 
-# Claude skills: link each skill dir individually (some skills like frontend-design
-# are external symlinks managed outside dotfiles, so we can't symlink the whole dir)
-for skill in "$DOTFILES_DIR/claude/skills"/*/; do
+# Agent skills: source of truth is dotfiles/agents/skills. Link each skill
+# individually into both agent homes so non-dotfiles skills can coexist.
+for skill in "$DOTFILES_DIR/agents/skills"/*/; do
     [ -d "$skill" ] || continue
+    link_file "$skill" "$HOME/.agents/skills/$(basename "$skill")"
     link_file "$skill" "$HOME/.claude/skills/$(basename "$skill")"
 done
 

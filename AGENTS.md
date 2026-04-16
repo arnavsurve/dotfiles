@@ -8,7 +8,7 @@ Rules:
 - Never edit config files in their installed location (e.g. `~/.gitconfig`, `~/.pi/agent/settings.json`). Edit the source in `~/dotfiles/` — the symlink makes it live immediately.
 - When adding a new config file to dotfiles, add a corresponding symlink entry in `install.sh` and run it to verify.
 - If you find a config file that's a regular file instead of a symlink, that's a bug. Back up the file, reconcile any drift with the dotfiles version, then replace it with a symlink.
-- Pi extensions and Claude skills are linked individually (not as a whole directory) so non-dotfiles items can coexist alongside them.
+- Pi extensions and agent skills are linked individually. Skills from `~/dotfiles/agents/skills/` are symlinked into both `~/.agents/skills/` and `~/.claude/skills/` so non-dotfiles items can coexist alongside them.
 - iTerm2 plist is symlinked from `~/Library/Preferences/`. iTerm may overwrite symlinks on quit — if this happens, re-run `install.sh`.
 
 ## Polling & Monitoring
