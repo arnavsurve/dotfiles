@@ -297,3 +297,22 @@ if [ "$(uname -s)" = "Darwin" ]; then
         echo "ok: pi dashboard daemon loaded (http://127.0.0.1:7778)"
     fi
 fi
+
+# ---------------------------------------------------------------------------
+# 6. Cache cleanup daemon (macOS only)
+# ---------------------------------------------------------------------------
+
+if [ "$(uname -s)" = "Darwin" ]; then
+    CLEANUP_DIR="$DOTFILES_DIR/cleanup-caches"
+    CLEANUP_PLIST_SRC="$CLEANUP_DIR/com.asurve.cleanup-caches.plist"
+    CLEANUP_PLIST_DST="$HOME/Library/LaunchAgents/com.asurve.cleanup-caches.plist"
+
+    mkdir -p "$HOME/Library/LaunchAgents" "$HOME/Library/Logs/cleanup-caches"
+
+    if [ -f "$CLEANUP_PLIST_SRC" ]; then
+        link_file "$CLEANUP_PLIST_SRC" "$CLEANUP_PLIST_DST"
+        launchctl unload "$CLEANUP_PLIST_DST" 2>/dev/null || true
+        launchctl load "$CLEANUP_PLIST_DST"
+        echo "ok: cache cleanup daemon loaded (runs daily at 5am)"
+    fi
+fi
