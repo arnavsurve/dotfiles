@@ -173,6 +173,7 @@ declare -A LINKS=(
     ["$DOTFILES_DIR/git/.gitconfig"]="$HOME/.gitconfig"
     ["$DOTFILES_DIR/nvim"]="$HOME/.config/nvim"
     ["$DOTFILES_DIR/ghostty"]="$HOME/.config/ghostty"
+    ["$DOTFILES_DIR/aerospace/aerospace.toml"]="$HOME/.config/aerospace/aerospace.toml"
     ["$DOTFILES_DIR/git/attributes"]="$HOME/.config/git/attributes"
     ["$DOTFILES_DIR/lazygit/config.yml"]="$HOME/Library/Application Support/lazygit/config.yml"
 
@@ -195,6 +196,7 @@ AGENTS_TARGETS=(
 
 mkdir -p \
     "$HOME/.config" \
+    "$HOME/.config/aerospace" \
     "$HOME/.agents/skills" \
     "$HOME/.claude" \
     "$HOME/.claude/skills" \
