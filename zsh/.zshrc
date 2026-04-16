@@ -238,3 +238,5 @@ sync_split_diffs_theme() {
 sync_split_diffs_theme
 
 export CLAUDE_CODE_NO_FLICKER=1
+
+source ~/dev/slop/main/shell-functions.sh
