@@ -160,7 +160,42 @@ wt() {
       ;;
     rm)
       shift
-      git worktree remove "$@"
+      local target_arg=
+      local arg
+      for arg in "$@"; do
+        if [[ "$arg" != -* ]]; then
+          target_arg="$arg"
+          break
+        fi
+      done
+
+      if [[ -n "$target_arg" ]]; then
+        git worktree remove "$@"
+        return
+      fi
+
+      if ! git rev-parse --is-inside-work-tree &>/dev/null; then
+        echo "Usage: wt rm [git-worktree-remove-options] <path>"
+        echo "Run 'wt rm' inside a linked worktree to remove the current one."
+        return 1
+      fi
+
+      local git_dir common_dir target_dir admin_dir
+      git_dir="$(git rev-parse --path-format=absolute --git-dir)" || return 1
+      common_dir="$(git rev-parse --path-format=absolute --git-common-dir)" || return 1
+      target_dir="$(git rev-parse --path-format=absolute --show-toplevel)" || return 1
+
+      if [[ "$git_dir" == "$common_dir" ]]; then
+        echo "Refusing to remove the main working tree from inside itself."
+        echo "Pass an explicit path to remove a different worktree."
+        return 1
+      fi
+
+      admin_dir="$common_dir"
+      [[ "${admin_dir:t}" == ".git" ]] && admin_dir="${admin_dir:h}"
+
+      builtin cd "$admin_dir" || return 1
+      git -C "$common_dir" worktree remove "$@" "$target_dir"
       ;;
     mv)
       shift
