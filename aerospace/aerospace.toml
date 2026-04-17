@@ -6,7 +6,7 @@ after-login-command = []
 # You can use it to add commands that run after AeroSpace startup.
 # 'after-startup-command' is run after 'after-login-command'
 # Available commands : https://nikitabobko.github.io/AeroSpace/commands
-after-startup-command = ['move-workspace-to-monitor --workspace 9 --wrap-around next']
+after-startup-command = []
 
 # Start AeroSpace at login
 start-at-login = true
@@ -64,6 +64,20 @@ run = 'layout floating'
 if.app-name-regex-substring = 'spotica'
 run = 'layout floating'
 
+
+# Pin workspaces to monitors. List form = try first, fall back if disconnected,
+# so everything collapses onto the laptop gracefully in laptop-only mode.
+[workspace-to-monitor-force-assignment]
+1 = 'main'
+2 = 'main'
+3 = 'main'
+4 = 'main'
+5 = 'main'
+6 = 'main'
+7 = 'main'
+8 = 'main'
+9 = ['^dell s2725qc$', '^built-in retina display$', 'main']
+10 = ['^built-in retina display$', '^dell s2725qc$', 'main']
 
 # Possible values: (qwerty|dvorak)
 # See https://nikitabobko.github.io/AeroSpace/guide#key-mapping
@@ -158,6 +172,7 @@ run = 'layout floating'
     alt-7 = 'workspace 7'
     alt-8 = 'workspace 8'
     alt-9 = 'workspace 9'
+    alt-0 = 'workspace 10'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#move-node-to-workspace
     alt-shift-1 = 'move-node-to-workspace 1'
@@ -169,6 +184,7 @@ run = 'layout floating'
     alt-shift-7 = 'move-node-to-workspace 7'
     alt-shift-8 = 'move-node-to-workspace 8'
     alt-shift-9 = 'move-node-to-workspace 9'
+    alt-shift-0 = 'move-node-to-workspace 10'
 
     # See: https://nikitabobko.github.io/AeroSpace/commands#workspace-back-and-forth
     alt-tab = 'workspace-back-and-forth'
