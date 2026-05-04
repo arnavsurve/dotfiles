@@ -9,5 +9,7 @@
     "npm:pi-mcp-adapter",
     "npm:pi-web-search"
   ],
-  "theme": "cursor-dark"
+  "theme": "cursor-dark",
+  "steeringMode": "all",
+  "followUpMode": "all"
 }
