@@ -275,3 +275,9 @@ sync_split_diffs_theme
 export CLAUDE_CODE_NO_FLICKER=1
 
 source ~/dev/slop/main/shell-functions.sh
+
+# sentry
+fpath=("/Users/asurve/.local/share/zsh/site-functions" $fpath)
+
+# bun completions
+[ -s "/Users/asurve/.bun/_bun" ] && source "/Users/asurve/.bun/_bun"
