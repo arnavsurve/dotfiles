@@ -28,9 +28,32 @@ When asked to spin off new work or work in a new worktree:
 - Never use a flat/shortened name that differs from the branch (e.g. don't use `my-thing` when the branch is `feature/my-thing`)
 - Then cd into ~/dev/escher/<branch-name>/ to do the work
 
+### Nested feature groups with an integration branch
+
+Some long-lived features have an integration branch that accumulates sub-feature work before merging up. By convention the local branch and worktree are named `feature/<group>/main`, but **the local branch tracks a remote branch that may have a different name**. For example, `feature/anyone/main` tracks `origin/anyone`.
+
+When the current working directory is `~/dev/escher/feature/<group>/main/` or `~/dev/escher/feature/<group>/<topic>/` AND a `feature/<group>/main` branch exists:
+- Find the remote upstream first: `git rev-parse --abbrev-ref feature/<group>/main@{upstream}` (e.g. `origin/anyone`)
+- New work goes at `feature/<group>/<topic>`, branched off `origin/<upstream>` (not the local branch — it may have drifted, and may not even have an upstream configured)
+- Command: `git -C ~/dev/escher worktree add feature/<group>/<topic> -b feature/<group>/<topic> origin/<upstream>`
+- Example for the anyone group: `git -C ~/dev/escher worktree add feature/anyone/my-topic -b feature/anyone/my-topic origin/anyone`
+- PRs from `feature/<group>/<topic>` target the **remote upstream branch** (e.g. `anyone` for the anyone group), not `main`
+- Only break out of the group prefix if the work is genuinely unrelated to the group
+
+This does NOT apply to prefix-grouped areas without an integration branch (e.g. `feature/coworker/*` topics all branch off `main` directly — there is no `feature/coworker/main`). Verify the integration branch exists before assuming this pattern.
+
 ## Git Commits
 
-Never commit automatically. After making changes, present a summary of what changed and wait for explicit instruction before running `git add` or `git commit`. This applies to all commits — fixes, features, refactors, chores, etc.
+Pre-agreed multi-step task lists: when working through a task list the user has explicitly approved (e.g. a PR review punch list, plan-mode plan, /loop work), commit each task as a separate logical commit as it's completed. Don't batch — small commits keep the diff reviewable and let mid-flight rollback work. Still surface what you committed in the response so the user can redirect.
+
+## Testing
+
+Default to red/green TDD when writing code:
+- Write a failing test first that captures the desired behavior
+- Implement the minimum to make it pass
+- Refactor only after green, never before
+
+For bug fixes, the failing test is a regression test that reproduces the bug. Exceptions: config edits, docs, typo fixes, exploratory spikes (call out when spiking).
 
 ## Code Style
 
@@ -46,3 +69,4 @@ Never commit automatically. After making changes, present a summary of what chan
 - If instructed to edit a markdown document, maintain existing formatting patterns
     - For example, if told to modify a `todo.md` on the desktop - don't overwrite existing human written todos or headings. Just modify additively
     - For things like `PLAN.md`s in repos used for iteration and planning, this does not apply
+@~/Developer/browser-harness/SKILL.md

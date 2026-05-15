@@ -169,6 +169,27 @@ return {
 				"tsconfig.base.json",
 				".git",
 			},
+			-- Large monorepos (e.g. ~/dev/escher) blow past the default ~3GB
+			-- tsserver heap and crash with SIGABRT. Bump the heap and trim
+			-- features that scale poorly with workspace size.
+			settings = {
+				typescript = {
+					tsserver = {
+						maxTsServerMemory = 12288,
+						experimental = {
+							enableProjectDiagnostics = false,
+						},
+					},
+					preferences = {
+						includePackageJsonAutoImports = "off",
+					},
+				},
+				javascript = {
+					preferences = {
+						includePackageJsonAutoImports = "off",
+					},
+				},
+			},
 		})
 		vim.lsp.enable("vtsls")
 

@@ -1,9 +1,18 @@
 {
+  "includeCoAuthoredBy": false,
   "model": "opus[1m]",
-  "fastMode": true,
   "enabledPlugins": {
-    "linear-cli@linear-cli": true
+    "linear-cli@linear-cli": true,
+    "paper-desktop@paper": true
   },
-  "skipDangerousModePermissionPrompt": true,
-  "includeCoAuthoredBy": false
+  "extraKnownMarketplaces": {
+    "paper": {
+      "source": {
+        "source": "github",
+        "repo": "paper-design/agent-plugins"
+      }
+    }
+  },
+  "fastMode": true,
+  "skipDangerousModePermissionPrompt": true
 }
