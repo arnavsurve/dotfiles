@@ -140,6 +140,10 @@ alias eroot="cd ~/dev/escher"
 alias dmain="cd ~/dev/doppelganger/main && git pull"
 alias droot="cd ~/dev/doppelganger"
 
+# anyone
+alias amain="cd ~/dev/escher/anyone && git pull"
+alias aroot="cd ~/dev/escher/anyone"
+
 unalias gd 2>/dev/null
 
 # worktrees
