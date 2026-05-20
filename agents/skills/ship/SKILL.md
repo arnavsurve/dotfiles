@@ -26,6 +26,7 @@ For each combination of state, do the matching thing:
 - **CI failing** → root-cause the failure and fix it. See "Fixing failures" below.
 - **mergeStateStatus: BEHIND** → rebase or merge upstream. Conflicts → see "Resolving conflicts" below.
 - **mergeStateStatus: BLOCKED + reviewDecision empty/REVIEW_REQUIRED** → review approval is stale or missing. Surface to the user with a specific ask ("PR needs fresh approval on `<sha>` — last approval was on `<earlier-sha>`"). Stop.
+- **Any review activity (new review submitted, CHANGES_REQUESTED, inline comments, review threads)** → stop and escalate to the user. Do not post replies, do not resolve threads, do not address comments inline. Surface the reviewer, the count of comments, and a link to the review. The user decides whether to invoke `/address` or respond manually.
 - **mergeStateStatus: BLOCKED + checks all green + reviewDecision: APPROVED** → there's a branch protection rule you can't see. Run `gh api repos/<owner>/<repo>/branches/<base>/protection` if visible; otherwise surface the unknown blocker to the user and stop.
 - **Draft** → ask the user before marking ready.
 
@@ -55,6 +56,7 @@ When the PR is behind and has conflicts:
 
 ## Hard Rules
 
+- **Never reply to PR review comments or resolve review threads.** When a reviewer leaves comments (inline or top-level), stop and escalate to the user with reviewer + comment count + PR link. Ship does not negotiate with reviewers — that is the user's call (via `/address` or manual response).
 - **Never `--no-verify`, `--no-gpg-sign`, or `git push --force`** unless the user explicitly asks. Hook failures are real signal — diagnose them.
 - **Never disable a failing check** to make the PR mergeable.
 - **Never amend a published commit** to "fix" CI. Push a new commit.
