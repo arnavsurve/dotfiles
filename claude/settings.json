@@ -14,5 +14,6 @@
     }
   },
   "fastMode": true,
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "theme": "auto"
 }
