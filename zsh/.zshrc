@@ -90,6 +90,9 @@ source $ZSH/oh-my-zsh.sh
 
 export EDITOR='nvim'
 
+# Raise file descriptor limit (macOS default 256 is too low for monorepo LSP/file-watchers).
+ulimit -n 65536
+
 # Compilation flags
 # export ARCHFLAGS="-arch $(uname -m)"
 
