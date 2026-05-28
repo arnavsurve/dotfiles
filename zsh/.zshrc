@@ -114,6 +114,29 @@ alias codex="codex --dangerously-bypass-approvals-and-sandbox"
 alias pwdc="pwd | pbcopy"
 alias piconfig="cd ~/dotfiles/pi && pi"
 
+# Launch a separate Chrome/Chromium instance with CDP enabled for agent debugging.
+# Isolated user-data-dir keeps it separate from the daily browser profile.
+# Pass a URL or extra Chrome flags as args. Port 9222 is the CDP standard.
+chrome-debug() {
+  local bin
+  if [[ "$OSTYPE" == "darwin"* ]] && [[ -x "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" ]]; then
+    bin="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+  else
+    local candidate
+    for candidate in google-chrome google-chrome-stable chromium chromium-browser; do
+      if command -v "$candidate" &>/dev/null; then
+        bin="$candidate"
+        break
+      fi
+    done
+  fi
+  if [[ -z "$bin" ]]; then
+    echo "chrome-debug: no Chrome/Chromium binary found" >&2
+    return 1
+  fi
+  "$bin" --remote-debugging-port=9222 --user-data-dir="$HOME/.local/share/chrome-debug-profile" "$@"
+}
+
 # bare clone a repo for worktree-based development
 # usage: gbare <repo-url> [directory]
 gbare() {

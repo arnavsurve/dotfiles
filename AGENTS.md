@@ -15,6 +15,24 @@ Rules:
 
 When monitoring long-running processes with `streamsh`, wait 5-10 seconds between status checks. Don't rapid-fire poll.
 
+## Portability
+
+Dotfiles travel across machines (macOS daily driver, occasional Linux). When adding shell helpers, aliases, scripts, or config, default to platform/distro agnostic from the start — don't hardcode macOS-only paths or assume specific binaries unless the helper is genuinely macOS-only (e.g. anything touching `/Applications/` or `defaults`).
+
+- For binaries that exist under different names across distros (e.g. `google-chrome` vs `chromium-browser`, `gsed` vs `sed`, `pbcopy` vs `xclip`), probe with `command -v` and fall back. Error loudly if nothing matches — don't silently no-op.
+- Prefer XDG paths (`$HOME/.local/share`, `$HOME/.config`, `$HOME/.cache`) over macOS-only locations like `~/Library/...` for data the helper itself owns.
+- Gate truly OS-specific blocks on `$OSTYPE` (`darwin*`, `linux*`) rather than assuming.
+- If a helper genuinely can't be made portable, say so in a comment and exit cleanly on unsupported platforms instead of failing with a confusing error.
+
+## Browser debugging (CDP)
+
+The user's daily browser is Arc and is **not** launched with `--remote-debugging-port`, so `browser-harness` can't attach to it directly. To inspect/debug the user's browser state, ask them to launch a separate CDP-enabled Chromium via the `chrome-debug` shell function (defined in `~/dotfiles/zsh/.zshrc`):
+
+- Runs Chrome on macOS, falls back to `google-chrome` / `chromium` / `chromium-browser` on Linux.
+- Listens on port `9222` (the CDP default `browser-harness` expects).
+- Uses an isolated `--user-data-dir` at `~/.local/share/chrome-debug-profile`, so it doesn't see the user's normal Chrome/Arc cookies, sessions, or extensions. The user has to log in to anything they want you to see.
+- Accepts pass-through args: `chrome-debug https://example.com` opens a tab on launch.
+
 ## Worktrees
 
 When asked to spin off new work or work in a new worktree:
