@@ -3,13 +3,20 @@
   "model": "opus[1m]",
   "enabledPlugins": {
     "linear-cli@linear-cli": true,
-    "paper-desktop@paper": true
+    "paper-desktop@paper": true,
+    "lapdog@lapdog": true
   },
   "extraKnownMarketplaces": {
     "paper": {
       "source": {
         "source": "github",
         "repo": "paper-design/agent-plugins"
+      }
+    },
+    "lapdog": {
+      "source": {
+        "source": "github",
+        "repo": "DataDog/dd-apm-test-agent"
       }
     }
   },
