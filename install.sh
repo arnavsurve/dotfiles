@@ -179,6 +179,7 @@ declare -A LINKS=(
 
     ["$DOTFILES_DIR/claude/settings.json"]="$HOME/.claude/settings.json"
     ["$DOTFILES_DIR/claude/settings.local.json"]="$HOME/.claude/settings.local.json"
+    ["$DOTFILES_DIR/claude/statusline-command.sh"]="$HOME/.claude/statusline-command.sh"
     ["$DOTFILES_DIR/pi/AGENTS.md"]="$HOME/.pi/agent/AGENTS.md"
     ["$DOTFILES_DIR/pi/agents"]="$HOME/.pi/agent/agents"
     ["$DOTFILES_DIR/pi/mcp.json"]="$HOME/.pi/agent/mcp.json"

@@ -4,7 +4,8 @@
   "enabledPlugins": {
     "linear-cli@linear-cli": true,
     "paper-desktop@paper": true,
-    "lapdog@lapdog": true
+    "lapdog@lapdog": true,
+    "clangd-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "paper": {
@@ -22,5 +23,10 @@
   },
   "fastMode": true,
   "skipDangerousModePermissionPrompt": true,
-  "theme": "auto"
+  "theme": "auto",
+  "effortLevel": "max",
+  "statusLine": {
+    "type": "command",
+    "command": "sh ~/.claude/statusline-command.sh"
+  }
 }
