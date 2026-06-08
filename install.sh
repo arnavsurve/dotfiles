@@ -317,3 +317,35 @@ if [ "$(uname -s)" = "Darwin" ]; then
         echo "ok: cache cleanup daemon loaded (runs daily at 5am)"
     fi
 fi
+
+# ---------------------------------------------------------------------------
+# 7. Raise system-wide file descriptor limit (macOS only)
+# ---------------------------------------------------------------------------
+# macOS defaults maxfiles to 256, which GUI-launched processes inherit from
+# launchd. Tools that fan out subprocesses (nvim-tree's git status across
+# monorepo worktrees + LSP server pipes) exhaust it and fail with EMFILE.
+# This system LaunchDaemon raises the default for every process. It must be a
+# root-owned regular file (launchd rejects user symlinks), so it is copied, not
+# linked. Requires sudo.
+
+if [ "$(uname -s)" = "Darwin" ]; then
+    MAXFILES_PLIST_SRC="$DOTFILES_DIR/macos/limit.maxfiles.plist"
+    MAXFILES_PLIST_DST="/Library/LaunchDaemons/limit.maxfiles.plist"
+
+    if [ -f "$MAXFILES_PLIST_SRC" ]; then
+        if ! cmp -s "$MAXFILES_PLIST_SRC" "$MAXFILES_PLIST_DST" 2>/dev/null; then
+            echo "==> Installing system maxfiles LaunchDaemon (needs sudo)..."
+            sudo cp "$MAXFILES_PLIST_SRC" "$MAXFILES_PLIST_DST"
+            sudo chown root:wheel "$MAXFILES_PLIST_DST"
+            sudo chmod 644 "$MAXFILES_PLIST_DST"
+            sudo launchctl bootout system "$MAXFILES_PLIST_DST" 2>/dev/null || true
+            sudo launchctl bootstrap system "$MAXFILES_PLIST_DST"
+            # Apply immediately to the running system domain so a reboot isn't required.
+            sudo launchctl limit maxfiles 65536 524288
+            echo "ok: maxfiles default raised to 65536 (soft) / 524288 (hard)"
+            echo "    restart apps (cmux, terminals) to pick up the new limit"
+        else
+            echo "ok: maxfiles LaunchDaemon already installed"
+        fi
+    fi
+fi

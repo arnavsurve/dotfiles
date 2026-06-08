@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Raise the system-wide open-file-descriptor limit.
+
+  macOS ships a default soft limit of 256 (see `launchctl limit maxfiles`).
+  GUI-launched processes (cmux, terminals, Neovide, etc.) inherit this default
+  from launchd, and a shell ulimit in ~/.zshrc only fixes shells that actually
+  source it. The low default causes EMFILE in tools that fan out subprocesses:
+  e.g. nvim-tree spawning `git status` across many monorepo worktrees while LSP
+  servers hold their own pipes exhausts 256 FDs, surfacing as
+  "File system watcher failed (EMFILE)".
+
+  Installed to /Library/LaunchDaemons (root:wheel, 644) so it runs at boot in
+  the system domain; the new default is then inherited by every process,
+  including GUI apps. Soft 65536 matches the ulimit in zsh/.zshrc.
+-->
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>limit.maxfiles</string>
+    <key>ProgramArguments</key>
+    <array>
+      <string>launchctl</string>
+      <string>limit</string>
+      <string>maxfiles</string>
+      <string>65536</string>
+      <string>524288</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>ServiceIPC</key>
+    <false/>
+  </dict>
+</plist>
