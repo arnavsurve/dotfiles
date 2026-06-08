@@ -112,7 +112,7 @@ alias c="clear"
 alias vi="nvim"
 alias lg="lazygit"
 alias y="yazi"
-alias claude="claude --dangerously-skip-permissions"
+alias claude="claude --dangerously-skip-permissions --effort max"
 alias codex="codex --dangerously-bypass-approvals-and-sandbox"
 alias pwdc="pwd | pbcopy"
 alias piconfig="cd ~/dotfiles/pi && pi"
@@ -169,6 +169,7 @@ alias droot="cd ~/dev/doppelganger"
 # anyone
 alias amain="cd ~/dev/escher/anyone && git pull"
 alias aroot="cd ~/dev/escher/anyone"
+alias yanyone="yarn anyone --tui"
 
 unalias gd 2>/dev/null
 
