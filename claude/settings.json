@@ -1,6 +1,10 @@
 {
   "includeCoAuthoredBy": false,
-  "model": "opus[1m]",
+  "model": "claude-fable-5[1m]",
+  "statusLine": {
+    "type": "command",
+    "command": "sh ~/.claude/statusline-command.sh"
+  },
   "enabledPlugins": {
     "linear-cli@linear-cli": true,
     "paper-desktop@paper": true,
@@ -23,10 +27,5 @@
   },
   "fastMode": true,
   "skipDangerousModePermissionPrompt": true,
-  "theme": "auto",
-  "effortLevel": "max",
-  "statusLine": {
-    "type": "command",
-    "command": "sh ~/.claude/statusline-command.sh"
-  }
+  "theme": "auto"
 }
