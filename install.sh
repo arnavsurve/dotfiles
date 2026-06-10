@@ -230,12 +230,15 @@ for target in "${AGENTS_TARGETS[@]}"; do
     link_file "$DOTFILES_DIR/AGENTS.md" "$target"
 done
 
-# Agent skills: source of truth is dotfiles/agents/skills. Link each skill
-# individually into both agent homes so non-dotfiles skills can coexist.
+# Agent skills: tracked in dotfiles/agents/skills, installed into
+# ~/.agents/skills (the source-of-truth agent home). ~/.claude/skills
+# mirrors ~/.agents/skills rather than pointing at dotfiles directly.
+# Per-skill links so non-dotfiles skills can coexist in either home.
 for skill in "$DOTFILES_DIR/agents/skills"/*/; do
     [ -d "$skill" ] || continue
-    link_file "$skill" "$HOME/.agents/skills/$(basename "$skill")"
-    link_file "$skill" "$HOME/.claude/skills/$(basename "$skill")"
+    name="$(basename "$skill")"
+    link_file "$skill" "$HOME/.agents/skills/$name"
+    link_file "$HOME/.agents/skills/$name" "$HOME/.claude/skills/$name"
 done
 
 # Pi extensions: link each extension individually so non-dotfiles extensions can coexist
