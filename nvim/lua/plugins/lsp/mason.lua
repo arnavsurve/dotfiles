@@ -44,6 +44,13 @@ return {
 		})
 
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
+		-- macOS defaults LSP file-watching on, but libuv reports a failed
+		-- FSEventStreamStart as EMFILE (regardless of ulimit) and that error
+		-- permanently kills every watcher in the session (neovim#27646) —
+		-- easy to hit with many nvims open across escher worktrees. Servers
+		-- that need watching fall back to watching internally (tsserver,
+		-- tailwind); sourcekit, which can't, opts back in below.
+		capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
 		local servers = {
 			"lua_ls",
 			"basedpyright",
