@@ -43,7 +43,13 @@ return {
 			automatic_enable = false,
 		})
 
-		local capabilities = require("cmp_nvim_lsp").default_capabilities()
+		-- cmp's default_capabilities() only contains textDocument.completion;
+		-- merge over the full client capabilities so workspace.* below exists.
+		local capabilities = vim.tbl_deep_extend(
+			"force",
+			vim.lsp.protocol.make_client_capabilities(),
+			require("cmp_nvim_lsp").default_capabilities()
+		)
 		-- macOS defaults LSP file-watching on, but libuv reports a failed
 		-- FSEventStreamStart as EMFILE (regardless of ulimit) and that error
 		-- permanently kills every watcher in the session (neovim#27646) —
