@@ -10,6 +10,11 @@ return {
 			view = {
 				side = "left",
 			},
+			git = {
+				-- default 400ms sits exactly at escher's idle `git status` time
+				-- (~399ms measured), so git integration randomly disables itself
+				timeout = 4000,
+			},
 		})
 	end,
 }
