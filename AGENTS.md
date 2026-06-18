@@ -73,6 +73,13 @@ Default to red/green TDD when writing code:
 
 For bug fixes, the failing test is a regression test that reproduces the bug. Exceptions: config edits, docs, typo fixes, exploratory spikes (call out when spiking).
 
+Tests must be real, not mock theater. A test where every collaborator is stubbed only re-checks wiring you wrote in the test — it can't catch a real bug, so it ships false confidence. The deciding line is ownership, not convenience:
+- Double only boundaries you don't own: a third-party network SDK, the process edge (an external HTTP service, e2b, a Slack/email API), and auth/session. Use MSW for the HTTP edge — never stub `global.fetch`, and never `vi.mock`/`jest.mock` your own client/sibling module (mock the HTTP it makes instead).
+- Use the real thing for everything you own or the harness provides: the DB, Redis, the job queue (assert the job actually landed), your own modules. Never mock the ORM (TypeORM/Drizzle). A partial `vi.mock('pkg', () => ({ ...actual, oneFn }))` is a targeted seam, not "mocking the module" — that's fine.
+- Assert the observable outcome, not the mock. Even when a boundary double is legitimate, assert what crossed it — the bytes written, the real downstream row/job — never a hoisted recorder or `toHaveBeenCalledWith`. A call *count* is fair game only when the count IS the behavior (retry attempts, heartbeat cadence); never as a stand-in for an outcome you could observe directly.
+- Too hard to test without mocking everything? That's a design signal — extract the pure logic and unit-test that, or write an integration test against real infra. Don't reach for more mocks.
+- Before calling a test over-mocked (yours or in review), READ it — a diff skim misreads `...actual` seams and house-convention boundary doubles as over-mocking.
+
 ## Code Style
 
 ### Comments
