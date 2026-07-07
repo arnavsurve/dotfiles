@@ -12,3 +12,8 @@ show_agent_labels_on_pane_borders = true
 prefix = "ctrl+a"
 split_horizontal = "prefix+minus"
 split_vertical = "prefix+|"
+
+[[keys.command]]
+key = "cmd+r"
+type = "plugin_action"
+command = "persiyanov.reviewr.toggle"
