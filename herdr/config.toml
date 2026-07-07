@@ -3,7 +3,7 @@ delivery = "system"
 
 [theme]
 name = "terminal"
-auto_switch = false
+auto_switch = true 
 
 [ui]
 show_agent_labels_on_pane_borders = true
