@@ -112,7 +112,10 @@ alias c="clear"
 alias vi="nvim"
 alias lg="lazygit"
 alias y="yazi"
-alias claude="claude --dangerously-skip-permissions --effort max"
+# One definition of the flags, fed to both the `claude` alias and `cl`
+# (cl execs claude directly, so it can't see the alias — it reads this env var).
+export CL_CLAUDE_ARGS="--dangerously-skip-permissions --effort max"
+alias claude="claude ${CL_CLAUDE_ARGS}"
 alias codex="codex --dangerously-bypass-approvals-and-sandbox"
 alias pwdc="pwd | pbcopy"
 alias piconfig="cd ~/dotfiles/pi && pi"
