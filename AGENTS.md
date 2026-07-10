@@ -45,6 +45,7 @@ When asked to spin off new work or work in a new worktree:
 - Example: `git -C ~/dev/escher worktree add feature/my-thing -b feature/my-thing` → creates `~/dev/escher/feature/my-thing/`
 - Never use a flat/shortened name that differs from the branch (e.g. don't use `my-thing` when the branch is `feature/my-thing`)
 - Then cd into ~/dev/escher/<branch-name>/ to do the work
+- If running inside herdr (`$HERDR_WORKSPACE_ID` is set), also point the reviewr plugin at the new worktree: `echo ~/dev/escher/<branch-name> > "${TMPDIR:-/tmp}/reviewr-active-worktree-$HERDR_WORKSPACE_ID"`. herdr tracks this pane's cwd as wherever the session originally launched and never follows a `cd`, so without this reviewr keeps diffing the original checkout instead of the new worktree.
 
 ### Nested feature groups with an integration branch
 
