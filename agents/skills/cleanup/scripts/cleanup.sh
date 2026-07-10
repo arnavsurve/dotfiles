@@ -85,11 +85,16 @@ UPSTREAM="$(git -C "$WORKTREE" rev-parse --abbrev-ref --symbolic-full-name '@{up
 UNPUSHED=""
 [ -n "$UPSTREAM" ] && UNPUSHED="$(git -C "$WORKTREE" log --oneline "$UPSTREAM"..HEAD 2>/dev/null || true)"
 
-HAS_PR=0
+PR_STATE=""
 if command -v gh >/dev/null 2>&1; then
-  gh -R "$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null || echo)" \
-     pr view "$BRANCH" --json state --jq '.state' >/dev/null 2>&1 && HAS_PR=1 || true
+  PR_STATE="$(gh -R "$(gh repo view --json nameWithOwner --jq .nameWithOwner 2>/dev/null || echo)" \
+     pr view "$BRANCH" --json state --jq '.state' 2>/dev/null || true)"
 fi
+# Only a truly OPEN PR should block deletion — `gh pr view` succeeds for
+# merged/closed PRs too, and treating those the same as open ones means
+# --delete-branch can never fire once a branch has ever had a PR merged.
+HAS_OPEN_PR=0
+[ "$PR_STATE" = "OPEN" ] && HAS_OPEN_PR=1
 
 # Compose projects to tear down: working_dir under the worktree, name !~ global.
 PROJECTS=""
@@ -107,14 +112,14 @@ echo "branch   : $BRANCH${UPSTREAM:+  (upstream $UPSTREAM)}"
 echo "clean    : $([ -z "$DIRTY" ] && echo yes || echo "NO — $(echo "$DIRTY" | grep -c .) changed file(s)")"
 [ -n "$UNPUSHED" ] && echo "unpushed : $(echo "$UNPUSHED" | grep -c .) commit(s) (kept on the branch ref)"
 [ -z "$UPSTREAM" ] && echo "unpushed : branch was never pushed (commits kept on the branch ref)"
-echo "open PR  : $([ "$HAS_PR" = 1 ] && echo yes || echo no)"
+echo "open PR  : $([ "$HAS_OPEN_PR" = 1 ] && echo yes || echo "no${PR_STATE:+ ($PR_STATE)}")"
 if [ "$have_docker" = 1 ]; then
   echo "stacks   : ${PROJECTS:-(none for this worktree)}"
   [ "$KEEP_TEST_CRUFT" != 1 ] && echo "cruft    : $(docker ps -aq --filter 'label=org.testcontainers' | grep -c . || echo 0) testcontainers, $(docker ps -aq --filter 'status=dead' | grep -c . || echo 0) dead"
 else
   echo "docker   : not available — skipping container cleanup"
 fi
-echo "branch   : $([ "$DELETE_BRANCH" = 1 ] && echo "delete (if no PR & merged)" || echo "keep")"
+echo "branch   : $([ "$DELETE_BRANCH" = 1 ] && echo "delete (if no open PR & merged)" || echo "keep")"
 echo "──────────────────"
 
 if [ -n "$DIRTY" ] && [ "$FORCE" != 1 ]; then
@@ -153,7 +158,7 @@ echo "removed worktree: $WORKTREE"
 
 # --- optionally delete the local branch -----------------------------------
 if [ "$DELETE_BRANCH" = 1 ]; then
-  if [ "$HAS_PR" = 1 ]; then
+  if [ "$HAS_OPEN_PR" = 1 ]; then
     echo "keeping branch '$BRANCH' — it has an open PR"
   elif git -C "${OTHER_WT:-$COMMON_DIR}" branch -d "$BRANCH" 2>/dev/null; then
     echo "deleted branch: $BRANCH"
