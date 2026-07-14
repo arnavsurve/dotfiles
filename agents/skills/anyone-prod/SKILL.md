@@ -59,6 +59,11 @@ agent/headless contexts where Pulumi auth usually isn't available.
 
 - Start SQL files with `\x auto` so wide rows render readably.
 - All DB timestamps are UTC (`timestamptz`).
+- `15433 already in use` usually means an interrupted earlier run orphaned
+  its tunnel: `lsof -nP -iTCP:15433 -sTCP:LISTEN` → kill the stale
+  `session-manager-plugin` PID (or set `LOCAL_PORT`).
+- `Your session has expired. Please reauthenticate using 'aws login'` —
+  the login is interactive; ask the user to run `aws login` themselves.
 - The secret-service DB is intentionally unreachable from the bastion
   (network + IAM) — operate on it via the secret-service API.
 - The `read-only-db-replica` Doppler project is the FLUX database, not
@@ -146,6 +151,10 @@ QID=$(aws logs start-query --region us-east-2 \
 sleep 3
 aws logs get-query-results --region us-east-2 --query-id "$QID"
 ```
+
+Insights' `like` operator takes a plain substring or a bare regex — inline
+flags reject the whole query (`like /mcp/i` → `MalformedQueryException`);
+OR the case variants instead (`like /mcp/ or like /MCP/`).
 
 Logs are pino JSON: `level` (30 info / 40 warn / 50 error), `module`,
 `msg`, `runId`, `agentId`, `sandboxId`. Worker `streamChat event` lines
