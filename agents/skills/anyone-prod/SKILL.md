@@ -59,9 +59,10 @@ agent/headless contexts where Pulumi auth usually isn't available.
 
 - Start SQL files with `\x auto` so wide rows render readably.
 - All DB timestamps are UTC (`timestamptz`).
-- `15433 already in use` usually means an interrupted earlier run orphaned
-  its tunnel: `lsof -nP -iTCP:15433 -sTCP:LISTEN` → kill the stale
-  `session-manager-plugin` PID (or set `LOCAL_PORT`).
+- An interrupted run can orphan its `session-manager-plugin` tunnel on
+  15433. The script auto-advances to a free port (15433-15453) when
+  `LOCAL_PORT` isn't set; clean up strays with
+  `lsof -nP -iTCP:15433 -sTCP:LISTEN` → kill the PID.
 - `Your session has expired. Please reauthenticate using 'aws login'` —
   the login is interactive; ask the user to run `aws login` themselves.
 - The secret-service DB is intentionally unreachable from the bastion

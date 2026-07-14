@@ -22,7 +22,6 @@ REGION="${AWS_REGION:-us-east-2}"
 PG_USER="${DB_USER:-developer}"
 DB_NAME=anyone
 DB_PORT=5432
-LOCAL_PORT="${LOCAL_PORT:-15433}"
 # Stable unless the RDS instance is rebuilt; re-discovered below when the
 # caller has rds:DescribeDBInstances.
 FALLBACK_DB_HOST=anyone-production-db.cpohlc3pkbyq.us-east-2.rds.amazonaws.com
@@ -32,9 +31,24 @@ FALLBACK_DB_HOST=anyone-production-db.cpohlc3pkbyq.us-east-2.rds.amazonaws.com
 command -v psql >/dev/null 2>&1 || { echo "psql not found (macOS: brew install libpq)" >&2; exit 1; }
 command -v session-manager-plugin >/dev/null 2>&1 || { echo "session-manager-plugin not found (macOS: brew install --cask session-manager-plugin)" >&2; exit 1; }
 
-if (echo > "/dev/tcp/127.0.0.1/${LOCAL_PORT}") 2>/dev/null; then
-  echo "127.0.0.1:${LOCAL_PORT} already in use — set LOCAL_PORT to a free port" >&2
-  exit 1
+port_busy() { (echo > "/dev/tcp/127.0.0.1/$1") 2>/dev/null; }
+
+# An interrupted earlier run can leave its session-manager-plugin holding the
+# port. Respect an explicit LOCAL_PORT; otherwise auto-advance past busy ones.
+if [ -n "${LOCAL_PORT:-}" ]; then
+  if port_busy "$LOCAL_PORT"; then
+    echo "127.0.0.1:${LOCAL_PORT} already in use — stale tunnel? Check: lsof -nP -iTCP:${LOCAL_PORT} -sTCP:LISTEN" >&2
+    exit 1
+  fi
+else
+  LOCAL_PORT=15433
+  while port_busy "$LOCAL_PORT"; do
+    LOCAL_PORT=$((LOCAL_PORT + 1))
+    if [ "$LOCAL_PORT" -gt 15453 ]; then
+      echo "no free port in 15433-15453 — stale tunnels? Check: lsof -nP -iTCP -sTCP:LISTEN | grep session-m" >&2
+      exit 1
+    fi
+  done
 fi
 
 # The bastion is replaced on deploys — always discover the newest running one.
