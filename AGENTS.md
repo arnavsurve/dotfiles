@@ -89,6 +89,7 @@ Tests must be real, not mock theater. A test where every collaborator is stubbed
 - Don't write comments that restate what the code already says
 - Only comment non-obvious logic: subtle invariants, unintuitive workarounds, "why" not "what"
 - No section-header comments unless the file is genuinely long and complex
+- Never reference issue trackers or code review artifacts in code comments — no Linear issues (`ANY-1234`), GitHub issues, PR numbers, or ticket IDs. A comment must explain the constraint on its own; readers shouldn't need to chase an external system to understand the code. Issue/PR references belong in commit messages and PR descriptions, where git history preserves the link.
 
 ### Markdown
 
