@@ -173,6 +173,8 @@ alias droot="cd ~/dev/doppelganger"
 alias amain="cd ~/dev/escher/anyone && git pull"
 alias aroot="cd ~/dev/escher/anyone"
 alias yanyone="yarn anyone --tui"
+# prod DB tunnel for Postico/DBeaver (SSM + RDS IAM; --write for developer_rw)
+alias anyone-db-tunnel="~/dotfiles/agents/skills/anyone-prod/scripts/db-tunnel.sh"
 
 unalias gd 2>/dev/null
 

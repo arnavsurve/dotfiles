@@ -45,6 +45,23 @@ resolves the RDS endpoint, mints the IAM token, opens the tunnel on
 One-time deps: `aws` CLI v2, `brew install --cask session-manager-plugin`,
 `brew install libpq` (the script adds the keg-only path itself on macOS).
 
+### scripts/db-tunnel.sh (GUI clients — no Pulumi needed)
+
+Holds the tunnel open for Postico/DBeaver/TablePlus instead of running a
+query. Same coordinate discovery as `db-sql.sh`; prints connection
+details, copies the IAM token to the clipboard, and re-mints a fresh one
+on Enter (tokens last 15 min and are only checked at connection time, so
+open connections survive but new ones need a fresh token).
+
+```bash
+~/.agents/skills/anyone-prod/scripts/db-tunnel.sh          # read-only (developer)
+~/.agents/skills/anyone-prod/scripts/db-tunnel.sh --write  # developer_rw
+```
+
+Default local port 15432 — deliberately stable (unlike db-sql.sh's
+auto-advance) so saved GUI connection profiles keep working; errors if
+busy. Aliased as `anyone-db-tunnel` in the user's zshrc.
+
 ### db-connect.sh in the escher repo (canonical, needs Pulumi)
 
 `apps/anyone/infra/scripts/db-connect.sh`:
@@ -52,8 +69,8 @@ One-time deps: `aws` CLI v2, `brew install --cask session-manager-plugin`,
 Same mechanism plus a `--tunnel` mode that holds the port open for GUI
 clients (Postico/DataGrip), but it resolves coordinates from
 `pulumi stack output`, so it needs the pulumi CLI and a
-`PULUMI_ACCESS_TOKEN`. Prefer it interactively; prefer `db-sql.sh` in
-agent/headless contexts where Pulumi auth usually isn't available.
+`PULUMI_ACCESS_TOKEN`. The bundled scripts above mirror it without the
+Pulumi dependency; prefer them when Pulumi auth isn't available.
 
 ### Gotchas
 
