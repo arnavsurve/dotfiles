@@ -60,7 +60,7 @@ open connections survive but new ones need a fresh token).
 
 Default local port 15432 — deliberately stable (unlike db-sql.sh's
 auto-advance) so saved GUI connection profiles keep working; errors if
-busy. Aliased as `anyone-db-tunnel` in the user's zshrc.
+busy. Aliased as `skydive-db` in the user's zshrc.
 
 ### db-connect.sh in the escher repo (canonical, needs Pulumi)
 
