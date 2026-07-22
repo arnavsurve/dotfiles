@@ -176,6 +176,22 @@ alias yanyone="yarn anyone --tui"
 # prod DB tunnel for Postico/DBeaver (SSM + RDS IAM; --write for developer_rw)
 alias skydive-db="~/dotfiles/agents/skills/anyone-prod/scripts/db-tunnel.sh"
 
+# build skydive-cli from the current worktree and point ~/.local/bin/skydive-dev at it
+# `skydive` itself is left untouched — that name resolves via PATH to the
+# npm-global install (npm i -g skydive-cli) so the two never collide.
+skcli-install() {
+  local cli="apps/anyone/cli"
+  if [[ ! -f "$cli/package.json" ]]; then
+    echo "skcli-install: no $cli/package.json here — run from an escher worktree root" >&2
+    return 1
+  fi
+  yarn install
+  yarn workspace skydive-cli build || return 1
+  mkdir -p "$HOME/.local/bin"
+  ln -sfn "$PWD/$cli/dist/js/bin.mjs" "$HOME/.local/bin/skydive-dev" \
+    && echo "skydive-dev -> $PWD/$cli/dist/js/bin.mjs"
+}
+
 unalias gd 2>/dev/null
 
 # worktrees
